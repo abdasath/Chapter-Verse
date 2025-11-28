@@ -1,0 +1,465 @@
+/* ====================================
+   0. CSS CUSTOM PROPERTIES (VARIABLES) [ENHANCEMENT]
+   ==================================== */
+
+:root {
+    /* Base Colors */
+    --color-background: #121212;
+    --color-surface: #1F1F1F;
+    --color-text-primary: #E0E0E0;
+    --color-text-secondary: #999;
+    --color-text-on-accent: #121212; /* Text color that sits on the accent colors */
+    
+    /* Accent Colors */
+    --color-primary-accent: #BB86FC; /* Violet */
+    --color-secondary-accent: #FFC857; /* Golden Yellow accent */
+    --color-secondary-hover: #E0A63A; /* Darker golden hover */
+    --color-danger: #CF6679; /* Soft Red/Pink for dark theme danger */
+    --color-crimson: #DC143C; /* Crimson for delete button */
+
+    /* Shadows */
+    --shadow-base: 0 4px 8px rgba(0, 0, 0, 0.3);
+    --shadow-hover: 0 8px 16px rgba(0, 0, 0, 0.5);
+    --shadow-fab: 0 6px 12px rgba(0, 0, 0, 0.6); /* Deeper shadow for FAB */
+}
+
+/* ====================================
+   1. GLOBAL & HOMEPAGE STYLES
+   ==================================== */
+
+/* Disable text selection on book cards */
+.book-card, .navbar, .modal-overlay h2,  .modal input, .modal textarea,  .btn-primary, .btn-secondary, .btn-danger {
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+}
+.book-card * {
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+}
+
+
+body {
+    margin: 0;
+    padding: 0;
+    /* Professional Dark Theme */
+    background-color: var(--color-background); 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--color-text-primary); /* Light gray for main text */
+    /* Smooth scrolling for anchor links/modals */
+    scroll-behavior: smooth;
+}
+
+/* --- Navbar Styling --- */
+.navbar {
+    background-color: var(--color-surface); /* Slightly lighter than the body for contrast */
+    padding: 15px 40px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    margin-bottom: 30px;
+    /* Ensure navbar is on top */
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.navbar h1 {
+    color: var(--color-primary-accent); /* Primary accent color (Violet) */
+    font-size: 1.8em;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+/* --- Main Content Grid --- */
+.container {
+    max-width: 1200px; 
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    /* Responsive grid: minimum card width 200px */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+    gap: 30px;
+}
+
+/* ====================================
+   2. BOOK CARD STYLING
+   ==================================== */
+
+.book-card {
+    background-color: var(--color-surface);
+    border-radius: 8px;
+    overflow: hidden;
+    /* Elegant shadow */
+    box-shadow: var(--shadow-base);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+    position: relative; 
+    padding-bottom: 15px;
+    /* Border for subtle definition */
+    border: 1px solid #333; 
+}
+
+.book-card:hover {
+    transform: translateY(-5px); /* Lift card on hover */
+    box-shadow: var(--shadow-hover); 
+}
+
+.book-card img {
+    width: 100%;
+    /* Fixed height for uniformity */
+    height: 250px; 
+    object-fit: cover;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.card-info {
+    padding: 0 10px;
+}
+
+.card-info h3 {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #F7F7F7;
+    margin: 5px 0 2px 0;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+.card-info p {
+    font-size: 0.9em;
+    color: var(--color-text-secondary); /* Use variable */
+    margin: 0;
+}
+
+/* --- Delete Button (X) --- */
+.delete-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: var(--color-crimson); /* Crimson red for delete */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    line-height: 25px; 
+    font-size: 1.0em;
+    font-weight: bold;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0; 
+    transition: opacity 0.2s, transform 0.2s, background-color 0.2s;
+    z-index: 20;
+}
+
+.book-card:hover .delete-btn {
+    opacity: 1; 
+    transform: scale(1.1);
+}
+
+/* Better hover state for button */
+.delete-btn:hover {
+    background: #A30B2A; /* Slightly darker crimson */
+}
+
+/* ====================================
+   3. ADD FLOATING ACTION BUTTON (FAB)
+   ==================================== */
+
+.add-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--color-secondary-accent); /* Golden accent */
+    color: var(--color-text-on-accent);
+    font-size: 2.2em;
+    line-height: 1;
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--shadow-fab); /* Use enhanced FAB shadow */
+    transition: background-color 0.2s, transform 0.2s;
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 5px; 
+    /* Focus state for keyboard accessibility */
+    outline: 2px solid transparent; 
+    outline-offset: 2px;
+}
+
+.add-button:hover {
+    background-color: var(--color-secondary-hover); /* Darker gold on hover */
+    transform: scale(1.05); /* Subtle lift on hover */
+}
+
+.add-button:focus {
+    /* Accessibility focus ring */
+    outline-color: var(--color-primary-accent); 
+    box-shadow: 0 0 0 4px rgba(187, 134, 252, 0.4); 
+}
+
+/* ====================================
+   4. GENERAL MODAL STYLING
+   ==================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.85); 
+    z-index: 1000; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s forwards;
+}
+
+.modal {
+    max-width: 450px; 
+    width: 90%;
+    background-color: var(--color-surface);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+    padding: 30px;
+    position: relative;
+    animation: scaleUp 0.3s forwards;
+}
+
+.modal h2 {
+    color: var(--color-primary-accent); 
+    margin-top: 0;
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+    font-size: 1.6em;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    color: #ccc;
+    margin-bottom: 8px;
+    font-size: 1em;
+    font-weight: 500;
+}
+
+.modal input[type="text"],
+.modal input[type="url"],
+.modal textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #444;
+    border-radius: 6px;
+    background-color: #2c2c2c; /* Slightly lighter for input fields */
+    color: var(--color-text-primary);
+    box-sizing: border-box; 
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.modal input:focus, .modal textarea:focus {
+    border-color: var(--color-primary-accent); /* Use primary purple for focus */
+    /* Subtle glow on focus */
+    box-shadow: 0 0 0 3px rgba(187, 134, 252, 0.35); 
+    outline: none;
+}
+
+.modal textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* --- Modal Action Buttons --- */
+.modal-actions {
+    margin-top: 30px;
+    text-align: right;
+}
+
+.btn-primary, .btn-secondary, .btn-danger {
+    padding: 12px 20px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1em;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    /* Accessibility focus */
+    outline: 2px solid transparent; 
+    outline-offset: 2px;
+}
+
+.btn-primary {
+    background-color: var(--color-secondary-accent); /* Golden accent */
+    color: var(--color-text-on-accent);
+}
+
+.btn-secondary {
+    background-color: #444; 
+    color: white;
+}
+
+.btn-danger {
+    background-color: var(--color-danger); 
+    color: var(--color-text-on-accent);
+}
+
+/* Hover states */
+.btn-primary:hover {
+    background-color: var(--color-secondary-hover);
+}
+
+.btn-secondary:hover {
+    background-color: #555;
+}
+
+.btn-danger:hover {
+    background-color: #B00020; /* Slightly more aggressive red hover */
+}
+
+/* Focus states for all buttons */
+.btn-primary:focus, .btn-secondary:focus, .btn-danger:focus {
+    outline-color: var(--color-primary-accent); 
+}
+
+
+/* ====================================
+   5. BOOK DETAILS MODAL STYLING
+   ==================================== */
+
+.details-modal {
+    max-width: 650px; 
+    width: 90%;
+    padding: 25px;
+    text-align: left;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 2em;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s;
+    z-index: 10; /* Ensure it's above other elements */
+    outline: 2px solid transparent; 
+    border-radius: 5px; /* For focus ring */
+}
+
+.close-btn:hover {
+    color: var(--color-primary-accent);
+}
+
+.close-btn:focus {
+    outline-color: #ccc;
+}
+
+.book-details-header {
+    display: flex;
+    gap: 25px;
+    align-items: flex-start; 
+    margin-bottom: 20px;
+}
+
+.details-cover {
+    width: 140px; 
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    /* Added a subtle border to the cover */
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+}
+
+.text-content h2 {
+    color: #F7F7F7; 
+    margin-bottom: 5px;
+    font-size: 2em;
+}
+
+.details-author {
+    color: var(--color-primary-accent); 
+    font-style: italic;
+    font-size: 1.1em;
+    margin-top: 0;
+}
+
+.book-description h3 {
+    margin-top: 20px;
+    color: var(--color-primary-accent);
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+}
+
+.book-description p {
+    color: var(--color-text-primary);
+    line-height: 1.6;
+    /* Slightly better text justification */
+    text-align: justify; 
+    text-justify: inter-word;
+}
+
+/* ====================================
+   6. ANIMATIONS
+   ==================================== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.9); }
+  to { transform: scale(1); }
+}
+
+/* ====================================
+   7. MEDIA QUERIES (RESPONSIVENESS)
+   ==================================== */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 10px 20px;
+        margin-bottom: 20px;
+    }
+
+    .container {
+        /* Allow cards to be slightly smaller on mobile */
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+        gap: 20px;
+    }
+
+    .book-details-header {
+        /* Stack cover and text content on small screens */
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .details-cover {
+        margin-bottom: 15px;
+    }
+
+    .details-modal {
+        padding: 20px;
+    }
+
+    .add-button {
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        font-size: 1.8em;
+    }
+}
