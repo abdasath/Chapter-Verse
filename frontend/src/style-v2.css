@@ -1,3 +1,4 @@
+
 /* ====================================
    0. CSS CUSTOM PROPERTIES (VARIABLES) [ENHANCEMENT]
    ==================================== */
@@ -41,13 +42,26 @@
 body {
     margin: 0;
     padding: 0;
-    /* Professional Dark Theme */
     background-color: var(--color-background); 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: var(--color-text-primary); /* Light gray for main text */
-    /* Smooth scrolling for anchor links/modals */
+    
+    /* --- UPDATED FONT FAMILY --- */
+    font-family: 'Inter', sans-serif; /* Clean font for all standard text */
+    color: var(--color-text-primary);
     scroll-behavior: smooth;
 }
+
+/* --- NEW: Headings use the Accent Font (Outfit) --- */
+h1, h2, h3, h4, h5, h6, .navbar h1 {
+    font-family: 'Outfit', sans-serif; /* Stylish geometric font for titles */
+    letter-spacing: 0.5px; /* Gives it a premium feel */
+}
+
+/* Ensure buttons and inputs also use the custom font */
+button, input, textarea, .btn-primary, .btn-secondary {
+    font-family: 'Inter', sans-serif;
+}
+
+
 
 /* --- Navbar Styling --- */
 .navbar {
@@ -78,6 +92,128 @@ body {
     /* Responsive grid: minimum card width 200px */
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
     gap: 30px;
+    padding-bottom: 150px;
+}
+
+.download-btn {
+  display: inline-block;
+  background-color: #ff2e2e; /* Neon red */
+  color: #fff;
+  padding: 10px 20px;
+  margin-top: 20px;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-family: inherit;
+  transition: background 0.3s ease;
+}
+
+.download-btn:hover {
+  background-color: #d00000;
+  color: #fff;
+}
+
+/* --- AUTH MODAL STYLING --- */
+
+/* Specific wrapper to not affect other modals */
+.auth-modal-content {
+  background: linear-gradient(145deg, #1a1a1a, #000000);
+  border: 1px solid #333;
+  box-shadow: 0 0 20px rgba(255, 46, 46, 0.1); /* Subtle red glow */
+  max-width: 380px !important; /* Make it narrower than book modals */
+  padding: 40px 30px !important;
+  text-align: center;
+  border-radius: 16px;
+}
+
+/* Header Text */
+.auth-header h2 {
+  margin: 0 0 5px 0;
+  color: #fff;
+  font-size: 1.8rem;
+}
+
+.auth-header p {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 25px;
+}
+
+/* Error Message */
+.auth-error {
+  background-color: rgba(255, 46, 46, 0.15);
+  color: #ff2e2e;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(255, 46, 46, 0.3);
+}
+
+/* Input Fields */
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: #222;
+  border: 1px solid #444;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+  box-sizing: border-box; /* Important for padding */
+}
+
+.input-group input:focus {
+  border-color: #ff2e2e; /* Neon red border on focus */
+  background-color: #2a2a2a;
+  box-shadow: 0 0 8px rgba(255, 46, 46, 0.2);
+}
+
+/* Main Button */
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #ff2e2e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.auth-btn:hover {
+  background-color: #d00000;
+  transform: translateY(-2px);
+}
+
+.auth-btn:active {
+  transform: translateY(0);
+}
+
+/* Footer Toggle Text */
+.auth-footer {
+  margin-top: 20px;
+  color: #bbb;
+  font-size: 0.9rem;
+}
+
+.auth-footer span {
+  color: #ff2e2e;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.auth-footer span:hover {
+  text-decoration: underline;
 }
 
 /* ====================================
@@ -163,6 +299,33 @@ body {
 .delete-btn:hover {
     background: #A30B2A; /* Slightly darker crimson */
 }
+
+/* --- User Name Bubble (Badge) --- */
+.user-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Bubble Shape & Color */
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle glassy background */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Thin border */
+    border-radius: 50px; /* Makes it fully rounded like a pill */
+    padding: 8px 20px;   /* Space inside the bubble */
+    
+    /* Text Styling */
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    
+    /* Cool Glass Effect */
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+
 
 /* ====================================
    3. ADD FLOATING ACTION BUTTON (FAB)
@@ -256,15 +419,18 @@ body {
 
 .modal input[type="text"],
 .modal input[type="url"],
+.modal input[type="email"],       /* <--- ADDED THIS */
+.modal input[type="password"],    /* <--- ADDED THIS */
 .modal textarea {
     width: 100%;
     padding: 12px;
     border: 1px solid #444;
     border-radius: 6px;
-    background-color: #2c2c2c; /* Slightly lighter for input fields */
+    background-color: #2c2c2c; 
     color: var(--color-text-primary);
     box-sizing: border-box; 
     transition: border-color 0.2s, box-shadow 0.2s;
+    font-size: 1rem; /* Ensure text isn't tiny */
 }
 
 .modal input:focus, .modal textarea:focus {

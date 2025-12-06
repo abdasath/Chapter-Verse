@@ -1,36 +1,45 @@
+// src/BookCard.jsx
 import React from 'react';
+import './style-v2.css';
 
-// BookCard now accepts the onSelect prop
-const BookCard = ({ book, onDelete, onSelect }) => {
-    return (
-        // The whole card is clickable via the onSelect handler
-        <div className="book-card" onClick={() => onSelect(book)}> 
-            {/* Fallback image if URL is bad or missing */}
-            <img 
-                src={book.coverImageURL} 
-                alt={book.title} 
-                onError={(e) => {
-                    e.target.onerror = null; 
-                    e.target.src = 'https://placehold.co/150x220/333333/FFFFFF?text=No+Cover'; 
-                }}
-            />
-            <div className="card-info">
-                <h3>{book.title}</h3>
-                <p>{book.author}</p>
-            </div>
-            
-            {/* The delete button must stop propagation to prevent the onSelect handler from firing */}
-            <button 
-                className="delete-btn" 
-                onClick={(e) => { 
-                    e.stopPropagation(); // Prevents details modal from opening
-                    onDelete(book._id); 
-                }}
-            >
-                &times;
-            </button>
-        </div>
-    );
-};
+// We accept 'isAdmin' as a prop. 
+// If it is false (or missing), the delete button will NOT show.
+function BookCard({ book, onDelete, onSelect, isAdmin }) {
+  
+  return (
+    <div 
+      className="book-card" 
+      onClick={(e) => {
+         // Safety check: Don't open book if we clicked the delete button
+         if(e.target.className === 'delete-btn') return;
+         onSelect(book);
+      }}
+    >
+      <img 
+        src={book.coverImageURL || "https://placehold.co/128x128/333333/FFFFFF?text=No+Cover"} 
+        alt={book.title} 
+        className="book-cover"
+      />
+      
+      {/* STRICT CHECK: Only show button if isAdmin is explicitly true */}
+      {isAdmin && (
+        <button 
+          className="delete-btn"
+          onClick={(e) => {
+            e.stopPropagation(); // Prevents the card click
+            onDelete(book._id);
+          }}
+        >
+          &times;
+        </button>
+      )}
+
+      <div className="book-info">
+        <h3>{book.title}</h3>
+        <p>{book.author}</p>
+      </div>
+    </div>
+  );
+}
 
 export default BookCard;

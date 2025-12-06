@@ -9,6 +9,7 @@ const AddBookModal = ({ onClose, onAdd }) => {
     author: '',
     coverImageURL: '',
     description: '',
+    downloadUrl: ''
   });
 
   // Handle input changes
@@ -78,6 +79,19 @@ const AddBookModal = ({ onClose, onAdd }) => {
                 onChange={handleChange}
               />
             </div>
+
+            {/* Paste this ABOVE the Description form-group */}
+          <div className="form-group">
+            <label htmlFor="downloadUrl">Download Link:</label>
+            <input 
+              type="text" 
+              id="downloadUrl" 
+              name="downloadUrl" 
+              value={formData.downloadUrl} 
+              onChange={handleChange} 
+              placeholder="Paste book link here..."
+            />
+          </div>
             
             <div className="modal-actions">
               <button type="submit" className="btn-primary">Add Book</button>

@@ -31,6 +31,19 @@ const BookDetailsModal = ({ book, onClose }) => {
           <div className="book-description">
             <h3>Description</h3>
             <p>{book.description || "No detailed description was added for this book."}</p>
+
+            {/* --- NEW CODE STARTS HERE --- */}
+          {book.downloadUrl && (
+            <a 
+              href={book.downloadUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="download-btn"
+            >
+              Download Book
+            </a>
+          )}
+
           </div>
           
         </div>
