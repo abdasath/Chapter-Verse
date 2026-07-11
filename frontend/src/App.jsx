@@ -154,6 +154,13 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentPage]);
 
+  // Lock background scroll when any modal is open
+  const isAnyModalOpen = isAuthModalOpen || isAddModalOpen || isLogoutModalOpen || !!selectedBook || !!editBook;
+  useEffect(() => {
+    document.body.style.overflow = isAnyModalOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isAnyModalOpen]);
+
   // ── Render ───────────────────────────────────────────────
   return (
     <div className="App">
