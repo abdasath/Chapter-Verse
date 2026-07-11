@@ -1,14 +1,15 @@
 // server.js (Your Node.js/Express Backend)
+require('dotenv').config(); // ✅ Load .env FIRST before anything else
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const app = express();
-const PORT = 5000;
-const bcrypt = require('bcryptjs'); // New
-const jwt = require('jsonwebtoken'); // New
-
-const JWT_SECRET = "change_this_to_a_complex_secret_key_123"; // In production, put this in .env
+const PORT = process.env.PORT || 5000;
+const JWT_SECRET = process.env.JWT_SECRET;
 // Middleware
 app.use(cors()); // Allow React frontend to talk to this backend
 app.use(express.json()); // To parse JSON bodies
@@ -17,10 +18,16 @@ app.use(express.json()); // To parse JSON bodies
 // NOTE: If using a local MongoDB, the URI should typically include the database name.
 // If using MongoDB Atlas, replace this with your secure connection string.
 // Make sure your local MongoDB service is running if you use this URI.
-const MONGO_URI = 'mongodb://127.0.0.1:27017/chapterverseDB'; // Added 'mongodb://' and a database name
+const MONGO_URI = process.env.MONGODB_URI; // ✅ Reads from .env (Atlas URI)
+
+if (!MONGO_URI) {
+  console.error('❌ MONGODB_URI is not defined in .env file!');
+  process.exit(1);
+}
+
 mongoose.connect(MONGO_URI)
-  .then(() => console.log('MongoDB connected successfully!'))
-  .catch(err => console.error('MongoDB connection error:', err.message)); // Added error logging
+  .then(() => console.log('✅ MongoDB Atlas connected successfully!'))
+  .catch(err => console.error('❌ MongoDB connection error:', err.message));
 
 // 1. Define User Schema
 const UserSchema = new mongoose.Schema({
@@ -132,7 +139,7 @@ app.delete('/api/books/:id', async (req, res) => {
     if (!result) {
       return res.status(404).json({ message: 'Book not found' });
     }
-    res.status(204).json({ message: 'Book deleted' }); // Use 204 status for successful deletion
+    res.sendStatus(204); // ✅ 204 must have no body
     // REMOVED TEMPORARY MOCK DATA
   } catch (error) {
     console.error('Error deleting book:', error);
@@ -141,6 +148,11 @@ app.delete('/api/books/:id', async (req, res) => {
 });
 
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+// ✅ Export for Vercel serverless — listen only in local dev
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

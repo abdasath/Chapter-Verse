@@ -1,167 +1,317 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
-import './style-v2.css'; 
-import BookCard from './BookCard'; 
-import AddBookModal from './AddBookModal'; 
+import './style-v2.css';
+import BookCard from './BookCard';
+import AddBookModal from './AddBookModal';
 import BookDetailsModal from './BookDetailsModal';
-import AuthModal from './AuthModal'; 
+import AuthModal from './AuthModal';
+import { Search, Library, LogOut, LogIn, BookOpen, Clock, Heart, ShieldCheck, Plus, X } from 'lucide-react';
 
 function App() {
   const [books, setBooks] = useState([]);
   const [selectedBook, setSelectedBook] = useState(null);
-  
+
   // --- AUTH STATE ---
-  const [user, setUser] = useState(null); 
-  const [userEmail, setUserEmail] = useState(null); 
+  const [user, setUser] = useState(null);
+  const [userEmail, setUserEmail] = useState(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  
-  // --- NEW: Logout Confirmation State ---
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
+  // --- SEARCH STATE ---
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  // --- PAGINATION STATE ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const booksPerPage = 12;
+
   // *** ADMIN RULE ***
-  const ADMIN_EMAIL = "abdasath003@gmail.com"; 
+  const ADMIN_EMAIL = 'abdasath003@gmail.com';
   const isAdmin = userEmail === ADMIN_EMAIL;
 
-  // 1. Fetch Books & Check Session
+  // ── Fetch Books ──────────────────────────────────────────
+  const fetchBooks = () => {
+    setIsLoading(true);
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/books`)
+      .then(res => {
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        setBooks(Array.isArray(data) ? data : []);
+        setTimeout(() => setIsLoading(false), 400);
+      })
+      .catch(err => {
+        console.error('Error fetching books:', err);
+        setBooks([]);
+        setTimeout(() => setIsLoading(false), 400);
+      });
+  };
+
   useEffect(() => {
-    fetch('http://localhost:5000/api/books')
-      .then(res => res.json())
-      .then(data => setBooks(data))
-      .catch(err => console.error("Error fetching books:", err));
+    fetchBooks();
 
     const token = localStorage.getItem('token');
     const savedUser = localStorage.getItem('username');
-    const savedEmail = localStorage.getItem('email'); 
-    
+    const savedEmail = localStorage.getItem('email');
     if (token && savedUser) {
       setUser(savedUser);
       setUserEmail(savedEmail);
     }
   }, []);
 
-  // 2. Handle Login
+  // ── Auth Handlers ────────────────────────────────────────
   const handleLogin = (token, username, email) => {
     localStorage.setItem('token', token);
     localStorage.setItem('username', username);
-    localStorage.setItem('email', email); 
+    localStorage.setItem('email', email);
     setUser(username);
     setUserEmail(email);
   };
 
-  // 3. Handle Logout (Actual Action)
   const confirmLogout = () => {
-    localStorage.clear(); 
+    localStorage.clear();
     setUser(null);
     setUserEmail(null);
-    setIsLogoutModalOpen(false); // Close the popup
+    setIsLogoutModalOpen(false);
   };
 
-  // 4. Add Book Function
+  // ── Book CRUD ────────────────────────────────────────────
   const addBook = (bookData) => {
-    fetch('http://localhost:5000/api/books', {
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/books`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(bookData),
     })
-    .then(res => res.json())
-    .then(newBook => {
-      setBooks([...books, newBook]);
-      setIsAddModalOpen(false);
-    })
-    .catch(err => console.error("Error adding book:", err));
+      .then(res => res.json())
+      .then(newBook => {
+        setBooks(prev => [...prev, newBook]);
+        setIsAddModalOpen(false);
+      })
+      .catch(err => console.error('Error adding book:', err));
   };
 
-  // 5. Delete Book Function
   const deleteBook = (id) => {
+    const prev = books;
     setBooks(books.filter(book => book._id !== id));
-    fetch(`http://localhost:5000/api/books/${id}`, { method: 'DELETE' })
-      .catch(err => console.error("Error deleting book:", err));
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/books/${id}`, { method: 'DELETE' })
+      .catch(err => {
+        console.error('Error deleting book:', err);
+        setBooks(prev); // rollback on failure
+      });
   };
 
+  // ── Filtered books ───────────────────────────────────────
+  const filteredBooks = books.filter((book) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      book.title.toLowerCase().includes(term) ||
+      book.author.toLowerCase().includes(term)
+    );
+  });
+
+  // ── Pagination Logic ─────────────────────────────────────
+  const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
+  const indexOfLastBook = currentPage * booksPerPage;
+  const indexOfFirstBook = indexOfLastBook - booksPerPage;
+  const currentBooks = filteredBooks.slice(indexOfFirstBook, indexOfLastBook);
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset to page 1 on search
+  }, [searchTerm]);
+
+  // ── Render ───────────────────────────────────────────────
   return (
     <div className="App">
-      <div className="navbar">
-        <h1 style={{ display: 'inline-block' }}>ChapterVerse.</h1>
-        
-        {/* Auth Buttons */}
-        <div style={{ float: 'right', marginTop: '5px' }}>
+
+      {/* ── NAVBAR ── */}
+      <nav className="navbar">
+        <div className="logo-container">
+          <h1 onClick={() => { setSearchTerm(''); setSelectedBook(null); fetchBooks(); }}
+              style={{ cursor: 'pointer' }}>
+            ChapterVerse.
+          </h1>
+        </div>
+
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="Search books or authors..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+        </div>
+
+        <div className="auth-container" style={{ gap: '12px', display: 'flex', alignItems: 'center' }}>
           {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <>
               <span className="user-badge">
-                Hello, {user} {isAdmin && <span style={{color: '#ff2e2e', marginLeft:'5px'}}>(Admin)</span>}
+                {user}
+                {isAdmin && <span style={{ color: '#fbbf24', fontSize: '0.75rem', marginLeft: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}><ShieldCheck size={14} /> Admin</span>}
               </span>
-              
-              {/* UPDATED: Click triggers the modal, not immediate logout */}
-              <button 
-                onClick={() => setIsLogoutModalOpen(true)} 
-                className="btn-secondary" 
-                style={{ padding: '8px 15px', borderRadius: '20px' }}
+              <button
+                onClick={() => setIsLogoutModalOpen(true)}
+                className="btn-secondary"
+                style={{ padding: '8px 16px', borderRadius: '20px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}
               >
-                Logout
+                <LogOut size={16} /> Logout
               </button>
-            </div>
+            </>
           ) : (
-            <button onClick={() => setIsAuthModalOpen(true)} className="btn-primary" style={{ padding: '8px 20px', borderRadius: '20px' }}>
-              Login
+            <button
+              onClick={() => setIsAuthModalOpen(true)}
+              className="btn-primary"
+              style={{ padding: '9px 22px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '6px' }}
+            >
+              <LogIn size={18} /> Sign In
             </button>
           )}
         </div>
-      </div>
-      
-      <div className="container">
-        {books.map(book => (
-          <BookCard 
-            key={book._id} 
-            book={book} 
-            onDelete={deleteBook} 
-            onSelect={setSelectedBook} 
-            isAdmin={isAdmin} 
-          />
-        ))}
-      </div>
-      
-      {isAdmin && (
-        <button className="add-button" onClick={() => setIsAddModalOpen(true)}>+</button>
-      )}
-      
-      {/* --- Existing Modals --- */}
-      {isAuthModalOpen && <AuthModal onClose={() => setIsAuthModalOpen(false)} onLogin={handleLogin} />}
-      {isAddModalOpen && <AddBookModal onClose={() => setIsAddModalOpen(false)} onAdd={addBook} />}
-      {selectedBook && <BookDetailsModal book={selectedBook} onClose={() => setSelectedBook(null)} />}
+      </nav>
 
-      {/* --- NEW: Logout Confirmation Modal --- */}
+      {/* ── HERO SECTION ── */}
+      {!searchTerm && (
+        <section className="hero">
+          <h2 className="hero-title">Your Digital Library,<br />Beautifully Curated.</h2>
+          <p className="hero-subtitle">
+            Discover, explore, and download books from our ever-growing collection.
+          </p>
+          <div className="hero-stats">
+            <div className="hero-stat">
+              <span className="hero-stat-value" style={{ display: 'flex', alignItems: 'center', height: '28px' }}><BookOpen size={24} color="var(--purple-400)" /></span>
+              <span className="hero-stat-label">Vast</span>
+            </div>
+            <div className="hero-stat" style={{ borderLeft: '1px solid rgba(255,255,255,0.08)', paddingLeft: '32px' }}>
+              <span className="hero-stat-value" style={{ display: 'flex', alignItems: 'center', height: '28px', color: '#fbbf24' }}><Heart size={24} /></span>
+              <span className="hero-stat-label">Free</span>
+            </div>
+            <div className="hero-stat" style={{ borderLeft: '1px solid rgba(255,255,255,0.08)', paddingLeft: '32px' }}>
+              <span className="hero-stat-value" style={{ display: 'flex', alignItems: 'center', height: '28px' }}><Clock size={24} color="var(--purple-400)" /></span>
+              <span className="hero-stat-label">24/7</span>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── SECTION HEADER ── */}
+      <div className="section-header">
+        <span className="section-title">
+          {searchTerm ? `Results for "${searchTerm}"` : 'Library'}
+        </span>
+        <div className="section-line" />
+      </div>
+
+      {/* ── BOOK GRID ── */}
+      <div className="container">
+        {isLoading ? (
+          <div className="loading-container">
+            <div className="spinner" />
+            <p className="loading-text">Loading your library...</p>
+          </div>
+        ) : currentBooks.length > 0 ? (
+          currentBooks.map((book, index) => (
+            <BookCard
+              key={book._id}
+              book={book}
+              onDelete={deleteBook}
+              onSelect={setSelectedBook}
+              isAdmin={isAdmin}
+              index={index}
+            />
+          ))
+        ) : (
+          <div className="empty-state">
+            <span className="empty-icon"><Library size={56} strokeWidth={1.5} color="rgba(255,255,255,0.4)" /></span>
+            <p className="empty-title">
+              {searchTerm ? 'No matches found' : 'No books yet'}
+            </p>
+            <p className="empty-subtitle">
+              {searchTerm
+                ? `We couldn't find any books matching "${searchTerm}". Try a different keyword.`
+                : 'The library is empty. Add the first book to get started!'}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* ── PAGINATION ── */}
+      {!isLoading && totalPages > 1 && (
+        <div className="pagination">
+          <button 
+            className="page-btn" 
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Prev
+          </button>
+          
+          <div className="page-numbers">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
+              <button
+                key={num}
+                className={`page-btn num-btn ${currentPage === num ? 'active' : ''}`}
+                onClick={() => setCurrentPage(num)}
+              >
+                {num}
+              </button>
+            ))}
+          </div>
+
+          <button 
+            className="page-btn" 
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {/* ── FOOTER ── */}
+      <footer className="footer">
+        <span className="footer-brand">ChapterVerse.</span>
+        <span className="footer-text">© {new Date().getFullYear()} · Built with ♥</span>
+        <span className="footer-tagline">Read freely. Learn endlessly.</span>
+      </footer>
+
+      {/* ── FAB (Admin only) ── */}
+      {isAdmin && (
+        <button className="add-button" onClick={() => setIsAddModalOpen(true)} title="Add a new book">
+          <Plus size={28} />
+        </button>
+      )}
+
+      {/* ── MODALS ── */}
+      {isAuthModalOpen && (
+        <AuthModal onClose={() => setIsAuthModalOpen(false)} onLogin={handleLogin} />
+      )}
+      {isAddModalOpen && (
+        <AddBookModal onClose={() => setIsAddModalOpen(false)} onAdd={addBook} />
+      )}
+      {selectedBook && (
+        <BookDetailsModal book={selectedBook} onClose={() => setSelectedBook(null)} />
+      )}
+
+      {/* ── LOGOUT CONFIRM MODAL ── */}
       {isLogoutModalOpen && (
         <div className="modal-overlay">
-          {/* UPDATED: Added style={{ maxWidth: '300px' }} to make it small */}
-          <div className="modal" style={{ maxWidth: '300px' }}>
-            
-            <button className="close-btn" onClick={() => setIsLogoutModalOpen(false)}>&times;</button>
-            
-            <div className="modal-content" style={{textAlign: 'center'}}>
-              <h2 style={{borderBottom: 'none', marginBottom: '10px'}}>Log Out?</h2>
-              <p style={{color: '#ccc', marginBottom: '30px'}}>Are you sure?</p>
-              
-              <div className="modal-actions" style={{justifyContent: 'center'}}>
-                <button 
-                  className="btn-secondary" 
-                  onClick={() => setIsLogoutModalOpen(false)}
-                >
-                  Cancel
-                </button>
-
-                <button 
-                  className="btn-danger" 
-                  onClick={confirmLogout}
-                >
-                  Yes, Log Out
-                </button>
-              </div>
+          <div className="modal logout-modal">
+            <button className="close-btn" onClick={() => setIsLogoutModalOpen(false)}><X size={20} /></button>
+            <h2>Log Out?</h2>
+            <p>Are you sure you want to sign out?</p>
+            <div className="modal-actions">
+              <button className="btn-secondary" onClick={() => setIsLogoutModalOpen(false)}>
+                Cancel
+              </button>
+              <button className="btn-danger" onClick={confirmLogout} style={{ whiteSpace: 'nowrap' }}>
+                Yes, Log Out
+              </button>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }

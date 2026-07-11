@@ -1,101 +1,106 @@
+// src/AddBookModal.jsx
 import React, { useState } from 'react';
-// Note: You will need to add CSS styles for 'modal-overlay', 'modal', and 'modal-content' 
-// in your style-v2.css file to make this look correct.
+import { X } from 'lucide-react';
 
 const AddBookModal = ({ onClose, onAdd }) => {
-  // State to manage the form inputs
   const [formData, setFormData] = useState({
     title: '',
     author: '',
     coverImageURL: '',
     description: '',
-    downloadUrl: ''
+    downloadUrl: '',
   });
 
-  // Handle input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Validate required fields (Title and Author based on your server.js schema)
     if (formData.title && formData.author) {
-      onAdd(formData); // Call the addBook function passed from App.jsx
+      onAdd(formData);
     } else {
       alert('Title and Author are required!');
     }
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal">
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        {/* ✅ X Close button */}
+        <button className="close-btn" onClick={onClose}><X size={20} /></button>
+
         <div className="modal-content">
           <h2>Add New Book</h2>
           <form onSubmit={handleSubmit}>
-            
             <div className="form-group">
-              <label htmlFor="title">Title:</label>
+              <label htmlFor="title">Title</label>
               <input
                 type="text"
                 id="title"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
+                placeholder="e.g. The Alchemist"
                 required
               />
             </div>
-            
+
             <div className="form-group">
-              <label htmlFor="author">Author:</label>
+              <label htmlFor="author">Author</label>
               <input
                 type="text"
                 id="author"
                 name="author"
                 value={formData.author}
                 onChange={handleChange}
+                placeholder="e.g. Paulo Coelho"
                 required
               />
             </div>
-            
+
             <div className="form-group">
-              <label htmlFor="coverImageURL">Cover Image URL:</label>
+              <label htmlFor="coverImageURL">Cover Image URL</label>
               <input
                 type="url"
                 id="coverImageURL"
                 name="coverImageURL"
                 value={formData.coverImageURL}
                 onChange={handleChange}
+                placeholder="https://..."
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="description">Description:</label>
+              <label htmlFor="downloadUrl">Download Link</label>
+              <input
+                type="text"
+                id="downloadUrl"
+                name="downloadUrl"
+                value={formData.downloadUrl}
+                onChange={handleChange}
+                placeholder="Paste PDF or book link here..."
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="description">Description</label>
               <textarea
                 id="description"
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
+                placeholder="A short description of the book..."
               />
             </div>
 
-            {/* Paste this ABOVE the Description form-group */}
-          <div className="form-group">
-            <label htmlFor="downloadUrl">Download Link:</label>
-            <input 
-              type="text" 
-              id="downloadUrl" 
-              name="downloadUrl" 
-              value={formData.downloadUrl} 
-              onChange={handleChange} 
-              placeholder="Paste book link here..."
-            />
-          </div>
-            
             <div className="modal-actions">
-              <button type="submit" className="btn-primary">Add Book</button>
-              <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
+              <button type="button" className="btn-secondary" onClick={onClose}>
+                Cancel
+              </button>
+              <button type="submit" className="btn-primary">
+                Add Book
+              </button>
             </div>
           </form>
         </div>

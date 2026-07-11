@@ -1,41 +1,43 @@
-// src/BookCard.jsx
 import React from 'react';
 import './style-v2.css';
+import { Trash2 } from 'lucide-react';
 
-// We accept 'isAdmin' as a prop. 
-// If it is false (or missing), the delete button will NOT show.
-function BookCard({ book, onDelete, onSelect, isAdmin }) {
-  
+function BookCard({ book, onDelete, onSelect, isAdmin, index = 0 }) {
   return (
-    <div 
-      className="book-card" 
+    <div
+      className="book-card"
+      style={{ animationDelay: `${index * 60}ms` }}
       onClick={(e) => {
-         // Safety check: Don't open book if we clicked the delete button
-         if(e.target.className === 'delete-btn') return;
-         onSelect(book);
+        // Use closest() to safely detect delete button clicks — avoids class-name fragility
+        if (e.target.closest('.delete-btn')) return;
+        onSelect(book);
       }}
     >
-      <img 
-        src={book.coverImageURL || "https://placehold.co/128x128/333333/FFFFFF?text=No+Cover"} 
-        alt={book.title} 
+      <img
+        src={book.coverImageURL || 'https://placehold.co/200x260/1a1a26/a855f7?text=No+Cover'}
+        alt={book.title}
         className="book-cover"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = 'https://placehold.co/200x260/1a1a26/a855f7?text=No+Cover';
+        }}
       />
-      
-      {/* STRICT CHECK: Only show button if isAdmin is explicitly true */}
+
       {isAdmin && (
-        <button 
+        <button
           className="delete-btn"
           onClick={(e) => {
-            e.stopPropagation(); // Prevents the card click
+            e.stopPropagation();
             onDelete(book._id);
           }}
+          title="Delete book"
         >
-          &times;
+          <Trash2 size={16} />
         </button>
       )}
 
       <div className="book-info">
-        <h3>{book.title}</h3>
+        <h3 title={book.title}>{book.title}</h3>
         <p>{book.author}</p>
       </div>
     </div>

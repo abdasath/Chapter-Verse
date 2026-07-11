@@ -1,4 +1,5 @@
 import React from 'react';
+import { X, Download } from 'lucide-react';
 
 // Displays full details of a single book
 const BookDetailsModal = ({ book, onClose }) => {
@@ -8,7 +9,7 @@ const BookDetailsModal = ({ book, onClose }) => {
       {/* StopPropagation prevents the overlay click from bubbling up when clicking inside the modal */}
       <div className="modal details-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-content">
-          <button className="close-btn" onClick={onClose}>&times;</button>
+          <button className="close-btn" onClick={onClose}><X size={20} /></button>
           
           <div className="book-details-header">
             <img 
@@ -40,7 +41,7 @@ const BookDetailsModal = ({ book, onClose }) => {
               rel="noopener noreferrer"
               className="download-btn"
             >
-              Download Book
+              <Download size={16} /> Download Book
             </a>
           )}
 

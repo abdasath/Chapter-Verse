@@ -1,631 +1,1001 @@
+/* ============================================================
+   CHAPTERVERSE — PREMIUM UI v3.0
+   Dark Purple / Gold Glassmorphism Theme
+   ============================================================ */
 
-/* ====================================
-   0. CSS CUSTOM PROPERTIES (VARIABLES) [ENHANCEMENT]
-   ==================================== */
+/* ── 0. IMPORTS & VARIABLES ─────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;700;800;900&display=swap');
 
 :root {
-    /* Base Colors */
-    --color-background: #121212;
-    --color-surface: #1F1F1F;
-    --color-text-primary: #E0E0E0;
-    --color-text-secondary: #999;
-    --color-text-on-accent: #121212; /* Text color that sits on the accent colors */
-    
-    /* Accent Colors */
-    --color-primary-accent: #BB86FC; /* Violet */
-    --color-secondary-accent: #FFC857; /* Golden Yellow accent */
-    --color-secondary-hover: #E0A63A; /* Darker golden hover */
-    --color-danger: #CF6679; /* Soft Red/Pink for dark theme danger */
-    --color-crimson: #DC143C; /* Crimson for delete button */
+  /* Core Colors */
+  --bg-primary:   #0d0d12;
+  --bg-secondary: #13131a;
+  --bg-surface:   #1a1a26;
+  --bg-elevated:  #222232;
 
-    /* Shadows */
-    --shadow-base: 0 4px 8px rgba(0, 0, 0, 0.3);
-    --shadow-hover: 0 8px 16px rgba(0, 0, 0, 0.5);
-    --shadow-fab: 0 6px 12px rgba(0, 0, 0, 0.6); /* Deeper shadow for FAB */
+  /* Accent Palette */
+  --purple-100: #f0e6ff;
+  --purple-400: #c084fc;
+  --purple-500: #a855f7;
+  --purple-600: #9333ea;
+  --gold-400:   #fbbf24;
+  --gold-500:   #f59e0b;
+  --gold-600:   #d97706;
+
+  /* Semantic */
+  --color-primary:   var(--purple-500);
+  --color-accent:    var(--gold-400);
+  --color-danger:    #ef4444;
+  --color-danger-soft: #fca5a5;
+  --color-success:   #34d399;
+  --color-text-1:    #f1f0f5;
+  --color-text-2:    #a09ab8;
+  --color-text-3:    #5e5878;
+  --color-border:    rgba(255,255,255,0.07);
+  --color-border-focus: rgba(168,85,247,0.6);
+
+  /* Glows */
+  --glow-purple: 0 0 30px rgba(168,85,247,0.25);
+  --glow-gold:   0 0 30px rgba(251,191,36,0.25);
+  --glow-card:   0 8px 32px rgba(0,0,0,0.5);
+  --glow-card-hover: 0 16px 48px rgba(168,85,247,0.2), 0 8px 24px rgba(0,0,0,0.6);
+
+  /* Radii & Spacing */
+  --radius-sm:  6px;
+  --radius-md:  12px;
+  --radius-lg:  18px;
+  --radius-xl:  24px;
+  --radius-full: 9999px;
 }
 
-/* ====================================
-   1. GLOBAL & HOMEPAGE STYLES
-   ==================================== */
-
-/* Disable text selection on book cards */
-.book-card, .navbar, .modal-overlay h2,  .modal input, .modal textarea,  .btn-primary, .btn-secondary, .btn-danger {
-  user-select: none;
-  -webkit-user-select: none; /* Safari */
-}
-.book-card * {
-  user-select: none;
-  -webkit-user-select: none; /* Safari */
+/* ── 1. GLOBAL RESET & BASE ──────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
+html { scroll-behavior: smooth; }
 
 body {
-    margin: 0;
-    padding: 0;
-    background-color: var(--color-background); 
-    
-    /* --- UPDATED FONT FAMILY --- */
-    font-family: 'Inter', sans-serif; /* Clean font for all standard text */
-    color: var(--color-text-primary);
-    scroll-behavior: smooth;
+  background-color: var(--bg-primary);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(168,85,247,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%, rgba(251,191,36,0.06) 0%, transparent 60%);
+  background-attachment: fixed;
+  font-family: 'Inter', sans-serif;
+  color: var(--color-text-1);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* --- NEW: Headings use the Accent Font (Outfit) --- */
-h1, h2, h3, h4, h5, h6, .navbar h1 {
-    font-family: 'Outfit', sans-serif; /* Stylish geometric font for titles */
-    letter-spacing: 0.5px; /* Gives it a premium feel */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 0.3px;
 }
 
-/* Ensure buttons and inputs also use the custom font */
-button, input, textarea, .btn-primary, .btn-secondary {
-    font-family: 'Inter', sans-serif;
+button, input, textarea, select {
+  font-family: 'Inter', sans-serif;
 }
 
+/* Disable text selection on interactive elements */
+.book-card, .navbar, .btn-primary, .btn-secondary, .btn-danger {
+  user-select: none;
+  -webkit-user-select: none;
+}
 
-
-/* --- Navbar Styling --- */
+/* ── 2. NAVBAR ───────────────────────────────────────────── */
 .navbar {
-    background-color: var(--color-surface); /* Slightly lighter than the body for contrast */
-    padding: 15px 40px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-    margin-bottom: 30px;
-    /* Ensure navbar is on top */
-    position: sticky;
-    top: 0;
-    z-index: 10;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 0 48px;
+  height: 72px;
+
+  background: rgba(13, 13, 18, 0.75);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.4);
 }
 
+/* Gradient brand title */
 .navbar h1 {
-    color: var(--color-primary-accent); /* Primary accent color (Violet) */
-    font-size: 1.8em;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    margin: 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.9rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  margin: 0;
+  cursor: pointer;
+  background: linear-gradient(135deg, #e0c3fc 0%, #a855f7 40%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
 }
 
-/* --- Main Content Grid --- */
-.container {
-    max-width: 1200px; 
-    margin: 0 auto;
-    padding: 0 20px;
-    display: grid;
-    /* Responsive grid: minimum card width 200px */
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
-    gap: 30px;
-    padding-bottom: 150px;
+.navbar h1:hover { opacity: 0.85; }
+
+/* ── 3. SEARCH BAR ───────────────────────────────────────── */
+.search-container {
+  flex: 2;
+  display: flex;
+  justify-content: center;
 }
 
-.download-btn {
-  display: inline-block;
-  background-color: #ff2e2e; /* Neon red */
-  color: #fff;
-  padding: 10px 20px;
-  margin-top: 20px;
-  text-decoration: none;
-  border-radius: 8px;
-  font-weight: bold;
-  font-family: inherit;
-  transition: background 0.3s ease;
-}
-
-.download-btn:hover {
-  background-color: #d00000;
-  color: #fff;
-}
-
-/* --- AUTH MODAL STYLING --- */
-
-/* Specific wrapper to not affect other modals */
-.auth-modal-content {
-  background: linear-gradient(145deg, #1a1a1a, #000000);
-  border: 1px solid #333;
-  box-shadow: 0 0 20px rgba(255, 46, 46, 0.1); /* Subtle red glow */
-  max-width: 380px !important; /* Make it narrower than book modals */
-  padding: 40px 30px !important;
+.search-input {
+  width: 100%;
+  max-width: 440px;
+  padding: 11px 22px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: var(--color-text-1);
+  font-size: 0.95rem;
   text-align: center;
-  border-radius: 16px;
-}
-
-/* Header Text */
-.auth-header h2 {
-  margin: 0 0 5px 0;
-  color: #fff;
-  font-size: 1.8rem;
-}
-
-.auth-header p {
-  color: #888;
-  font-size: 0.9rem;
-  margin-bottom: 25px;
-}
-
-/* Error Message */
-.auth-error {
-  background-color: rgba(255, 46, 46, 0.15);
-  color: #ff2e2e;
-  padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 15px;
-  font-size: 0.85rem;
-  border: 1px solid rgba(255, 46, 46, 0.3);
-}
-
-/* Input Fields */
-.input-group {
-  margin-bottom: 15px;
-}
-
-.input-group input {
-  width: 100%;
-  padding: 12px 15px;
-  background-color: #222;
-  border: 1px solid #444;
-  border-radius: 8px;
-  color: #fff;
-  font-size: 1rem;
-  outline: none;
   transition: all 0.3s ease;
-  box-sizing: border-box; /* Important for padding */
+  outline: none;
+  backdrop-filter: blur(8px);
 }
 
-.input-group input:focus {
-  border-color: #ff2e2e; /* Neon red border on focus */
-  background-color: #2a2a2a;
-  box-shadow: 0 0 8px rgba(255, 46, 46, 0.2);
+.search-input::placeholder { color: var(--color-text-3); }
+
+.search-input:focus {
+  border-color: var(--color-border-focus);
+  background: rgba(168,85,247,0.08);
+  box-shadow: 0 0 0 3px rgba(168,85,247,0.15), var(--glow-purple);
+  transform: scale(1.01);
 }
 
-/* Main Button */
-.auth-btn {
-  width: 100%;
-  padding: 12px;
-  background-color: #ff2e2e;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: transform 0.2s, background-color 0.2s;
+/* ── 4. AUTH AREA ────────────────────────────────────────── */
+.auth-container {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
-.auth-btn:hover {
-  background-color: #d00000;
-  transform: translateY(-2px);
-}
-
-.auth-btn:active {
-  transform: translateY(0);
-}
-
-/* Footer Toggle Text */
-.auth-footer {
-  margin-top: 20px;
-  color: #bbb;
+.user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(168,85,247,0.12);
+  border: 1px solid rgba(168,85,247,0.25);
+  border-radius: var(--radius-full);
+  padding: 7px 18px;
+  color: var(--purple-100);
+  font-family: 'Outfit', sans-serif;
   font-size: 0.9rem;
+  font-weight: 600;
+  backdrop-filter: blur(8px);
 }
 
-.auth-footer span {
-  color: #ff2e2e;
-  font-weight: bold;
+/* ── 5. BUTTONS ──────────────────────────────────────────── */
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+  padding: 10px 22px;
+  border: none;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  margin-left: 5px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  position: relative;
+  overflow: hidden;
 }
 
-.auth-footer span:hover {
-  text-decoration: underline;
+.btn-primary {
+  background: linear-gradient(135deg, var(--purple-600), var(--purple-400));
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(168,85,247,0.35);
+}
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0);
+  transition: background 0.2s;
+}
+.btn-primary:hover { 
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(168,85,247,0.5);
+}
+.btn-primary:hover::after { background: rgba(255,255,255,0.06); }
+.btn-primary:active { transform: translateY(0); }
+
+.btn-secondary {
+  background: rgba(255,255,255,0.07);
+  color: var(--color-text-2);
+  border: 1px solid var(--color-border);
+}
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.12);
+  color: var(--color-text-1);
+  border-color: rgba(255,255,255,0.15);
 }
 
-/* ====================================
-   2. BOOK CARD STYLING
-   ==================================== */
+.btn-danger {
+  background: rgba(239,68,68,0.15);
+  color: var(--color-danger-soft);
+  border: 1px solid rgba(239,68,68,0.3);
+}
+.btn-danger:hover {
+  background: rgba(239,68,68,0.25);
+  border-color: rgba(239,68,68,0.5);
+  box-shadow: 0 0 20px rgba(239,68,68,0.2);
+}
 
+/* Focus rings */
+.btn-primary:focus { outline-color: var(--purple-400); }
+.btn-secondary:focus { outline-color: var(--color-text-2); }
+.btn-danger:focus { outline-color: var(--color-danger); }
+
+/* ── 6. HERO SECTION ─────────────────────────────────────── */
+.hero {
+  text-align: center;
+  padding: 64px 24px 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 200px;
+  background: radial-gradient(ellipse, rgba(168,85,247,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, #f1f0f5 0%, #c084fc 50%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 16px;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  color: var(--color-text-2);
+  max-width: 480px;
+  margin: 0 auto 28px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+.hero-stats {
+  display: inline-flex;
+  gap: 32px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 12px 32px;
+  backdrop-filter: blur(8px);
+}
+
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.hero-stat-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--purple-400);
+}
+
+.hero-stat-label {
+  font-size: 0.75rem;
+  color: var(--color-text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* ── 7. SECTION HEADER ───────────────────────────────────── */
+.section-header {
+  max-width: 1200px;
+  margin: 0 auto 20px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-2);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.section-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--color-border) 0%, transparent 100%);
+}
+
+.section-count {
+  font-size: 0.8rem;
+  color: var(--color-text-3);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--color-border);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+}
+
+/* ── 8. BOOK GRID ────────────────────────────────────────── */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px 120px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 24px;
+}
+
+/* ── 9. BOOK CARD ────────────────────────────────────────── */
 .book-card {
-    background-color: var(--color-surface);
-    border-radius: 8px;
-    overflow: hidden;
-    /* Elegant shadow */
-    box-shadow: var(--shadow-base);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-    text-align: center;
-    position: relative; 
-    padding-bottom: 15px;
-    /* Border for subtle definition */
-    border: 1px solid #333; 
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--glow-card);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.3s ease,
+              border-color 0.3s ease;
+
+  /* Card stagger fade-in */
+  animation: cardFadeIn 0.5s ease both;
 }
 
 .book-card:hover {
-    transform: translateY(-5px); /* Lift card on hover */
-    box-shadow: var(--shadow-hover); 
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--glow-card-hover);
+  border-color: rgba(168,85,247,0.3);
 }
 
-.book-card img {
-    width: 100%;
-    /* Fixed height for uniformity */
-    height: 250px; 
-    object-fit: cover;
-    display: block;
-    margin-bottom: 10px;
+/* Shimmer overlay on hover */
+.book-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(168,85,247,0.05) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+  pointer-events: none;
 }
 
-.card-info {
-    padding: 0 10px;
+.book-card:hover::before { opacity: 1; }
+
+/* Cover image */
+.book-cover {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
 }
 
-.card-info h3 {
-    font-size: 1.1em;
-    font-weight: 600;
-    color: #F7F7F7;
-    margin: 5px 0 2px 0;
-    white-space: nowrap; 
-    overflow: hidden;
-    text-overflow: ellipsis; 
+.book-card:hover .book-cover {
+  transform: scale(1.04);
 }
 
-.card-info p {
-    font-size: 0.9em;
-    color: var(--color-text-secondary); /* Use variable */
-    margin: 0;
+/* Book info */
+.book-info {
+  padding: 14px 14px 16px;
+  position: relative;
+  z-index: 2;
 }
 
-/* --- Delete Button (X) --- */
+.book-info h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-1);
+  margin: 0 0 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.book-info p {
+  font-size: 0.8rem;
+  color: var(--color-text-2);
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Bottom accent bar */
+.book-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--purple-500), var(--gold-400));
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+  transform-origin: left;
+}
+
+.book-card:hover::after { transform: scaleX(1); }
+
+/* ── 10. DELETE BUTTON ───────────────────────────────────── */
 .delete-btn {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: var(--color-crimson); /* Crimson red for delete */
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 25px;
-    height: 25px;
-    line-height: 25px; 
-    font-size: 1.0em;
-    font-weight: bold;
-    padding: 0;
-    cursor: pointer;
-    opacity: 0; 
-    transition: opacity 0.2s, transform 0.2s, background-color 0.2s;
-    z-index: 20;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(239,68,68,0.85);
+  backdrop-filter: blur(4px);
+  color: white;
+  border: none;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s, background 0.2s;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
-.book-card:hover .delete-btn {
-    opacity: 1; 
-    transform: scale(1.1);
-}
-
-/* Better hover state for button */
+.book-card:hover .delete-btn { opacity: 1; }
 .delete-btn:hover {
-    background: #A30B2A; /* Slightly darker crimson */
+  background: var(--color-danger);
+  transform: scale(1.15) rotate(10deg);
 }
 
-/* --- User Name Bubble (Badge) --- */
-.user-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    
-    /* Bubble Shape & Color */
-    background-color: rgba(255, 255, 255, 0.1); /* Subtle glassy background */
-    border: 1px solid rgba(255, 255, 255, 0.2); /* Thin border */
-    border-radius: 50px; /* Makes it fully rounded like a pill */
-    padding: 8px 20px;   /* Space inside the bubble */
-    
-    /* Text Styling */
-    color: #fff;
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    
-    /* Cool Glass Effect */
-    backdrop-filter: blur(5px);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
+/* ── 11. LOADING STATE ───────────────────────────────────── */
+.loading-container {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 20px;
 }
 
+.spinner {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid rgba(168,85,247,0.15);
+  border-top-color: var(--purple-400);
+  border-right-color: var(--gold-400);
+  animation: spin 0.9s linear infinite;
+}
 
+.loading-text {
+  color: var(--color-text-2);
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
 
-/* ====================================
-   3. ADD FLOATING ACTION BUTTON (FAB)
-   ==================================== */
+/* ── 12. EMPTY STATE ─────────────────────────────────────── */
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+  text-align: center;
+}
 
+.empty-icon {
+  font-size: 3.5rem;
+  line-height: 1;
+  filter: grayscale(0.3);
+}
+
+.empty-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-text-1);
+}
+
+.empty-subtitle {
+  font-size: 0.9rem;
+  color: var(--color-text-3);
+  max-width: 280px;
+  line-height: 1.6;
+}
+
+/* ── 13. FAB ADD BUTTON ──────────────────────────────────── */
 .add-button {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: var(--color-secondary-accent); /* Golden accent */
-    color: var(--color-text-on-accent);
-    font-size: 2.2em;
-    line-height: 1;
-    border: none;
-    cursor: pointer;
-    box-shadow: var(--shadow-fab); /* Use enhanced FAB shadow */
-    transition: background-color 0.2s, transform 0.2s;
-    z-index: 50;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-bottom: 5px; 
-    /* Focus state for keyboard accessibility */
-    outline: 2px solid transparent; 
-    outline-offset: 2px;
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-500), var(--gold-400));
+  color: #0d0d12;
+  font-size: 2rem;
+  line-height: 1;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(251,191,36,0.4), 0 2px 8px rgba(0,0,0,0.5);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
 .add-button:hover {
-    background-color: var(--color-secondary-hover); /* Darker gold on hover */
-    transform: scale(1.05); /* Subtle lift on hover */
+  transform: scale(1.12) rotate(90deg);
+  box-shadow: 0 10px 32px rgba(251,191,36,0.55), 0 4px 12px rgba(0,0,0,0.5);
 }
 
 .add-button:focus {
-    /* Accessibility focus ring */
-    outline-color: var(--color-primary-accent); 
-    box-shadow: 0 0 0 4px rgba(187, 134, 252, 0.4); 
+  outline-color: var(--purple-400);
+  box-shadow: 0 0 0 4px rgba(168,85,247,0.35);
 }
 
-/* ====================================
-   4. GENERAL MODAL STYLING
-   ==================================== */
-
+/* ── 14. MODAL OVERLAY ───────────────────────────────────── */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.85); 
-    z-index: 1000; 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: fadeIn 0.3s forwards;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
 }
 
 .modal {
-    max-width: 450px; 
-    width: 90%;
-    background-color: var(--color-surface);
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
-    padding: 30px;
-    position: relative;
-    animation: scaleUp 0.3s forwards;
+  width: 100%;
+  max-width: 460px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(168,85,247,0.15);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.7), var(--glow-purple);
+  padding: 36px;
+  position: relative;
+  animation: scaleUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+
+/* Top glow accent on modal */
+.modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--purple-500), var(--gold-400), var(--purple-500));
 }
 
 .modal h2 {
-    color: var(--color-primary-accent); 
-    margin-top: 0;
-    border-bottom: 1px solid #333;
-    padding-bottom: 15px;
-    margin-bottom: 25px;
-    font-size: 1.6em;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-text-1);
+  margin: 0 0 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
 }
 
+/* ── 15. FORM STYLES ─────────────────────────────────────── */
 .form-group {
-    margin-bottom: 18px;
+  margin-bottom: 18px;
 }
 
 .form-group label {
-    display: block;
-    color: #ccc;
-    margin-bottom: 8px;
-    font-size: 1em;
-    font-weight: 500;
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-2);
+  margin-bottom: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
 }
 
 .modal input[type="text"],
 .modal input[type="url"],
-.modal input[type="email"],       /* <--- ADDED THIS */
-.modal input[type="password"],    /* <--- ADDED THIS */
+.modal input[type="email"],
+.modal input[type="password"],
 .modal textarea {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #444;
-    border-radius: 6px;
-    background-color: #2c2c2c; 
-    color: var(--color-text-primary);
-    box-sizing: border-box; 
-    transition: border-color 0.2s, box-shadow 0.2s;
-    font-size: 1rem; /* Ensure text isn't tiny */
+  width: 100%;
+  padding: 11px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-1);
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  outline: none;
 }
 
-.modal input:focus, .modal textarea:focus {
-    border-color: var(--color-primary-accent); /* Use primary purple for focus */
-    /* Subtle glow on focus */
-    box-shadow: 0 0 0 3px rgba(187, 134, 252, 0.35); 
-    outline: none;
+.modal input:focus,
+.modal textarea:focus {
+  border-color: var(--color-border-focus);
+  background: rgba(168,85,247,0.06);
+  box-shadow: 0 0 0 3px rgba(168,85,247,0.12);
 }
 
 .modal textarea {
-    resize: vertical;
-    min-height: 80px;
+  resize: vertical;
+  min-height: 90px;
+  line-height: 1.5;
 }
 
-/* --- Modal Action Buttons --- */
 .modal-actions {
-    margin-top: 30px;
-    text-align: right;
+  margin-top: 28px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
-.btn-primary, .btn-secondary, .btn-danger {
-    padding: 12px 20px;
-    margin-left: 10px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1em;
-    transition: background-color 0.2s, box-shadow 0.2s;
-    /* Accessibility focus */
-    outline: 2px solid transparent; 
-    outline-offset: 2px;
-}
-
-.btn-primary {
-    background-color: var(--color-secondary-accent); /* Golden accent */
-    color: var(--color-text-on-accent);
-}
-
-.btn-secondary {
-    background-color: #444; 
-    color: white;
-}
-
-.btn-danger {
-    background-color: var(--color-danger); 
-    color: var(--color-text-on-accent);
-}
-
-/* Hover states */
-.btn-primary:hover {
-    background-color: var(--color-secondary-hover);
-}
-
-.btn-secondary:hover {
-    background-color: #555;
-}
-
-.btn-danger:hover {
-    background-color: #B00020; /* Slightly more aggressive red hover */
-}
-
-/* Focus states for all buttons */
-.btn-primary:focus, .btn-secondary:focus, .btn-danger:focus {
-    outline-color: var(--color-primary-accent); 
-}
-
-
-/* ====================================
-   5. BOOK DETAILS MODAL STYLING
-   ==================================== */
-
-.details-modal {
-    max-width: 650px; 
-    width: 90%;
-    padding: 25px;
-    text-align: left;
-}
-
+/* ── 16. CLOSE BUTTON ────────────────────────────────────── */
 .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 2em;
-    color: #ccc;
-    cursor: pointer;
-    transition: color 0.2s;
-    z-index: 10; /* Ensure it's above other elements */
-    outline: 2px solid transparent; 
-    border-radius: 5px; /* For focus ring */
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-2);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
 }
 
 .close-btn:hover {
-    color: var(--color-primary-accent);
+  background: rgba(255,255,255,0.12);
+  color: var(--color-text-1);
+  border-color: rgba(255,255,255,0.2);
+  transform: rotate(90deg);
 }
 
-.close-btn:focus {
-    outline-color: #ccc;
+/* ── 17. BOOK DETAILS MODAL ──────────────────────────────── */
+.details-modal {
+  max-width: 660px;
+  padding: 32px;
+  text-align: left;
 }
 
 .book-details-header {
-    display: flex;
-    gap: 25px;
-    align-items: flex-start; 
-    margin-bottom: 20px;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  margin-bottom: 24px;
 }
 
 .details-cover {
-    width: 140px; 
-    height: 200px;
-    object-fit: cover;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-    /* Added a subtle border to the cover */
-    border: 1px solid rgba(255, 255, 255, 0.1); 
+  width: 130px;
+  height: 190px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08);
+  flex-shrink: 0;
 }
 
 .text-content h2 {
-    color: #F7F7F7; 
-    margin-bottom: 5px;
-    font-size: 2em;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--color-text-1);
+  margin-bottom: 8px;
+  line-height: 1.2;
 }
 
 .details-author {
-    color: var(--color-primary-accent); 
-    font-style: italic;
-    font-size: 1.1em;
-    margin-top: 0;
+  color: var(--purple-400);
+  font-style: italic;
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
 }
 
 .book-description h3 {
-    margin-top: 20px;
-    color: var(--color-primary-accent);
-    border-bottom: 1px solid #333;
-    padding-bottom: 5px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-3);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 20px 0 10px;
 }
 
 .book-description p {
-    color: var(--color-text-primary);
-    line-height: 1.6;
-    /* Slightly better text justification */
-    text-align: justify; 
-    text-justify: inter-word;
+  color: var(--color-text-2);
+  line-height: 1.7;
+  font-size: 0.95rem;
 }
 
-/* ====================================
-   6. ANIMATIONS
-   ==================================== */
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--purple-600), var(--purple-400));
+  color: #fff;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px rgba(168,85,247,0.35);
+}
+
+.download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(168,85,247,0.5);
+}
+
+/* ── 18. AUTH MODAL SPECIFICS ────────────────────────────── */
+.auth-switch-text {
+  color: var(--purple-400);
+  cursor: pointer;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.auth-switch-text:hover { color: var(--purple-400); text-decoration: underline; }
+
+.auth-success {
+  background: rgba(52,211,153,0.1);
+  border: 1px solid rgba(52,211,153,0.3);
+  color: var(--color-success);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.auth-error {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: var(--color-danger-soft);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  margin-bottom: 16px;
+}
+
+/* ── 19. LOGOUT MODAL ────────────────────────────────────── */
+.logout-modal {
+  max-width: 320px;
+  text-align: center;
+  padding: 40px 32px;
+}
+
+.logout-modal h2 {
+  font-size: 1.3rem;
+  margin-bottom: 8px;
+}
+
+.logout-modal p {
+  color: var(--color-text-2);
+  font-size: 0.9rem;
+  margin-bottom: 28px;
+}
+
+.logout-modal .modal-actions {
+  justify-content: center;
+}
+
+/* ── 20. FOOTER ──────────────────────────────────────────── */
+.footer {
+  border-top: 1px solid var(--color-border);
+  padding: 28px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(13,13,18,0.6);
+  backdrop-filter: blur(8px);
+  margin-top: 40px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footer-brand {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--purple-400), var(--gold-400));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.footer-text {
+  font-size: 0.8rem;
+  color: var(--color-text-3);
+}
+
+.footer-tagline {
+  font-size: 0.8rem;
+  color: var(--color-text-3);
+}
+
+/* ── 21. ANIMATIONS ──────────────────────────────────────── */
 @keyframes fadeIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
 
 @keyframes scaleUp {
-  from { transform: scale(0.9); }
-  to { transform: scale(1); }
+  from { opacity: 0; transform: scale(0.92) translateY(10px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    }
 }
 
-/* ====================================
-   7. MEDIA QUERIES (RESPONSIVENESS)
-   ==================================== */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ── 22. PAGINATION ──────────────────────────────────────── */
+.pagination {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 8px;
+}
+
+.page-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-2);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-btn.num-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.1);
+  color: var(--color-text-1);
+}
+
+.page-btn.active {
+  background: linear-gradient(135deg, var(--purple-600), var(--purple-400));
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 2px 10px rgba(168,85,247,0.3);
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── 23. RESPONSIVE ──────────────────────────────────────── */
 @media (max-width: 768px) {
-    .navbar {
-        padding: 10px 20px;
-        margin-bottom: 20px;
-    }
+  .navbar {
+    height: auto;
+    flex-direction: column;
+    padding: 16px 20px;
+    gap: 12px;
+    position: relative;
+  }
 
-    .container {
-        /* Allow cards to be slightly smaller on mobile */
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
-        gap: 20px;
-    }
+  .navbar h1 { font-size: 1.6rem; }
 
-    .book-details-header {
-        /* Stack cover and text content on small screens */
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
+  .search-container,
+  .auth-container {
+    width: 100%;
+    justify-content: center;
+  }
 
-    .details-cover {
-        margin-bottom: 15px;
-    }
+  .search-input { max-width: 100%; text-align: left; }
 
-    .details-modal {
-        padding: 20px;
-    }
+  .hero { padding: 40px 16px 32px; }
 
-    .add-button {
-        bottom: 20px;
-        right: 20px;
-        width: 50px;
-        height: 50px;
-        font-size: 1.8em;
-    }
+  .hero-stats {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 24px;
+  }
+
+  .container {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 16px;
+    padding: 0 16px 100px;
+  }
+
+  .book-details-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .details-cover { margin-bottom: 12px; }
+
+  .details-modal,
+  .modal { padding: 24px 20px; }
+
+  .footer {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px 20px;
+  }
+
+  .add-button {
+    bottom: 20px;
+    right: 20px;
+    width: 52px;
+    height: 52px;
+    font-size: 1.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
