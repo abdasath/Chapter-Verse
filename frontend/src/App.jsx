@@ -31,6 +31,16 @@ function App() {
   const isAdmin = userEmail === ADMIN_EMAIL;
 
   // ── Fetch Books ──────────────────────────────────────────
+  // Fisher-Yates shuffle — new random order on every reload
+  const shuffleArray = (arr) => {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  };
+
   const fetchBooks = () => {
     setIsLoading(true);
     fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/books`)
@@ -39,7 +49,7 @@ function App() {
         return res.json();
       })
       .then(data => {
-        setBooks(Array.isArray(data) ? data : []);
+        setBooks(Array.isArray(data) ? shuffleArray(data) : []);
         setTimeout(() => setIsLoading(false), 400);
       })
       .catch(err => {
@@ -120,6 +130,11 @@ function App() {
   useEffect(() => {
     setCurrentPage(1); // Reset to page 1 on search
   }, [searchTerm]);
+
+  // Scroll to top whenever page changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
 
   // ── Render ───────────────────────────────────────────────
   return (
