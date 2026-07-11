@@ -14,20 +14,49 @@ const JWT_SECRET = process.env.JWT_SECRET;
 app.use(cors()); // Allow React frontend to talk to this backend
 app.use(express.json()); // To parse JSON bodies
 
-// --- MongoDB Connection ---
-// NOTE: If using a local MongoDB, the URI should typically include the database name.
-// If using MongoDB Atlas, replace this with your secure connection string.
-// Make sure your local MongoDB service is running if you use this URI.
-const MONGO_URI = process.env.MONGODB_URI; // ✅ Reads from .env (Atlas URI)
+const MONGO_URI = process.env.MONGODB_URI;
 
 if (!MONGO_URI) {
-  console.error('❌ MONGODB_URI is not defined in .env file!');
+  console.error('❌ MONGODB_URI is not defined!');
   process.exit(1);
 }
 
-mongoose.connect(MONGO_URI)
-  .then(() => console.log('✅ MongoDB Atlas connected successfully!'))
-  .catch(err => console.error('❌ MongoDB connection error:', err.message));
+// ── Serverless-safe connection caching ───────────────────
+// In serverless, each function invocation is stateless.
+// We cache the connection on the global object so it's
+// reused across warm invocations instead of reconnecting every time.
+let cached = global.mongoose;
+if (!cached) { cached = global.mongoose = { conn: null, promise: null }; }
+
+const connectDB = async () => {
+  if (cached.conn) return cached.conn;
+  if (!cached.promise) {
+    cached.promise = mongoose
+      .connect(MONGO_URI, { serverSelectionTimeoutMS: 30000 })
+      .then(m => {
+        console.log('✅ MongoDB Atlas connected successfully!');
+        return m;
+      });
+  }
+  try {
+    cached.conn = await cached.promise;
+  } catch (err) {
+    cached.promise = null; // reset so next request retries
+    throw err;
+  }
+  return cached.conn;
+};
+
+// Ensure DB is connected before every request
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('❌ MongoDB connection error:', err.message);
+    res.status(500).json({ message: 'Database connection failed' });
+  }
+});
 
 // 1. Define User Schema
 const UserSchema = new mongoose.Schema({
