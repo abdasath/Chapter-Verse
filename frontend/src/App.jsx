@@ -5,6 +5,7 @@ import BookCard from './BookCard';
 import AddBookModal from './AddBookModal';
 import BookDetailsModal from './BookDetailsModal';
 import AuthModal from './AuthModal';
+import EditBookModal from './EditBookModal';
 import { Search, Library, LogOut, LogIn, BookOpen, Clock, Heart, ShieldCheck, Plus, X } from 'lucide-react';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [editBook, setEditBook] = useState(null); // book being edited
 
   // --- SEARCH STATE ---
   const [searchTerm, setSearchTerm] = useState('');
@@ -110,6 +112,22 @@ function App() {
         console.error('Error deleting book:', err);
         setBooks(prev); // rollback on failure
       });
+  };
+
+  const updateBook = async (id, updatedData) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/books/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedData),
+      });
+      if (!res.ok) throw new Error('Update failed');
+      const updated = await res.json();
+      setBooks(prev => prev.map(b => b._id === id ? updated : b));
+      setEditBook(null);
+    } catch (err) {
+      console.error('Error updating book:', err);
+    }
   };
 
   // ── Filtered books ───────────────────────────────────────
@@ -232,6 +250,7 @@ function App() {
               book={book}
               onDelete={deleteBook}
               onSelect={setSelectedBook}
+              onEdit={setEditBook}
               isAdmin={isAdmin}
               index={index}
             />
@@ -307,6 +326,13 @@ function App() {
       )}
       {selectedBook && (
         <BookDetailsModal book={selectedBook} onClose={() => setSelectedBook(null)} />
+      )}
+      {editBook && (
+        <EditBookModal
+          book={editBook}
+          onClose={() => setEditBook(null)}
+          onUpdate={updateBook}
+        />
       )}
 
       {/* ── LOGOUT CONFIRM MODAL ── */}

@@ -131,6 +131,22 @@ app.post('/api/books', async (req, res) => {
   }
 });
 
+// PUT (update) a book
+app.put('/api/books/:id', async (req, res) => {
+  try {
+    const updated = await Book.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!updated) return res.status(404).json({ message: 'Book not found' });
+    res.json(updated);
+  } catch (error) {
+    console.error('Error updating book:', error);
+    res.status(400).json({ message: 'Invalid book data' });
+  }
+});
+
 // DELETE a book
 app.delete('/api/books/:id', async (req, res) => {
   try {

@@ -1,15 +1,14 @@
 import React from 'react';
 import './style-v2.css';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Pencil } from 'lucide-react';
 
-function BookCard({ book, onDelete, onSelect, isAdmin, index = 0 }) {
+function BookCard({ book, onDelete, onSelect, onEdit, isAdmin, index = 0 }) {
   return (
     <div
       className="book-card"
       style={{ animationDelay: `${index * 60}ms` }}
       onClick={(e) => {
-        // Use closest() to safely detect delete button clicks — avoids class-name fragility
-        if (e.target.closest('.delete-btn')) return;
+        if (e.target.closest('.delete-btn') || e.target.closest('.edit-btn')) return;
         onSelect(book);
       }}
     >
@@ -24,16 +23,22 @@ function BookCard({ book, onDelete, onSelect, isAdmin, index = 0 }) {
       />
 
       {isAdmin && (
-        <button
-          className="delete-btn"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(book._id);
-          }}
-          title="Delete book"
-        >
-          <Trash2 size={16} />
-        </button>
+        <div className="admin-btns">
+          <button
+            className="edit-btn"
+            onClick={(e) => { e.stopPropagation(); onEdit(book); }}
+            title="Edit book"
+          >
+            <Pencil size={14} />
+          </button>
+          <button
+            className="delete-btn"
+            onClick={(e) => { e.stopPropagation(); onDelete(book._id); }}
+            title="Delete book"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
       )}
 
       <div className="book-info">
