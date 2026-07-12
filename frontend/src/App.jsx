@@ -6,7 +6,7 @@ import AddBookModal from './AddBookModal';
 import BookDetailsModal from './BookDetailsModal';
 import AuthModal from './AuthModal';
 import EditBookModal from './EditBookModal';
-import { Search, Library, LogOut, LogIn, BookOpen, Clock, Heart, ShieldCheck, Plus, X } from 'lucide-react';
+import { Search, Library, LogOut, LogIn, BookOpen, Clock, Heart, ShieldCheck, Plus, X, ArrowUp } from 'lucide-react';
 
 function App() {
   const [books, setBooks] = useState([]);
@@ -204,6 +204,14 @@ function App() {
     return () => { document.body.style.overflow = ''; };
   }, [isAnyModalOpen]);
 
+  // Show scroll-to-top button after user scrolls down 300px
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 300);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   // ── Render ───────────────────────────────────────────────
   return (
     <div className="App">
@@ -211,7 +219,13 @@ function App() {
       {/* ── NAVBAR ── */}
       <nav className="navbar">
         <div className="logo-container">
-          <h1 onClick={() => { setSearchTerm(''); setSelectedBook(null); fetchBooks(); }}
+          <h1 onClick={() => {
+              setSearchTerm('');
+              setSelectedBook(null);
+              setCurrentPage(1);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              fetchBooks();
+            }}
               style={{ cursor: 'pointer' }}>
             ChapterVerse.
           </h1>
@@ -363,6 +377,17 @@ function App() {
         <span className="footer-text">© {new Date().getFullYear()} · Built with ♥</span>
         <span className="footer-tagline">Read freely. Learn endlessly.</span>
       </footer>
+
+      {/* ── SCROLL TO TOP ── */}
+      {showScrollTop && (
+        <button
+          className="scroll-top-btn"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          title="Back to top"
+        >
+          <ArrowUp size={20} />
+        </button>
+      )}
 
       {/* ── FAB (Admin only) ── */}
       {isAdmin && (
