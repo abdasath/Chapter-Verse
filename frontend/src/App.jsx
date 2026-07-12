@@ -181,6 +181,17 @@ function App() {
     setCurrentPage(1); // Reset to page 1 on search
   }, [searchTerm]);
 
+  // Smart truncated page number array — always shows first, last, current±1, and ... for gaps
+  const getPageNumbers = (current, total) => {
+    if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
+    const pages = [1];
+    if (current > 3)            pages.push('...');
+    for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) pages.push(i);
+    if (current < total - 2)    pages.push('...');
+    pages.push(total);
+    return pages;
+  };
+
   // Scroll to top whenever page changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -312,32 +323,36 @@ function App() {
       {/* ── PAGINATION ── */}
       {!isLoading && totalPages > 1 && (
         <div className="pagination">
-          <button 
-            className="page-btn" 
+          <button
+            className="page-btn"
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
           >
-            Prev
+            ‹
           </button>
-          
+
           <div className="page-numbers">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
-              <button
-                key={num}
-                className={`page-btn num-btn ${currentPage === num ? 'active' : ''}`}
-                onClick={() => setCurrentPage(num)}
-              >
-                {num}
-              </button>
-            ))}
+            {getPageNumbers(currentPage, totalPages).map((item, idx) =>
+              item === '...' ? (
+                <span key={`ellipsis-${idx}`} className="page-ellipsis">...</span>
+              ) : (
+                <button
+                  key={item}
+                  className={`page-btn num-btn ${currentPage === item ? 'active' : ''}`}
+                  onClick={() => setCurrentPage(item)}
+                >
+                  {item}
+                </button>
+              )
+            )}
           </div>
 
-          <button 
-            className="page-btn" 
+          <button
+            className="page-btn"
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
           >
-            Next
+            ›
           </button>
         </div>
       )}

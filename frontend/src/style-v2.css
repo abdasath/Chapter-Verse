@@ -932,6 +932,19 @@ button, input, textarea, select {
   padding: 0;
 }
 
+.page-ellipsis {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-2);
+  font-size: 1rem;
+  letter-spacing: 1px;
+  cursor: default;
+  user-select: none;
+}
+
 .page-btn:hover:not(:disabled) {
   background: rgba(255,255,255,0.1);
   color: var(--color-text-1);
