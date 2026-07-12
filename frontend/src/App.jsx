@@ -91,6 +91,12 @@ function App() {
 
   // ── Book CRUD ────────────────────────────────────────────
   const addBook = (bookData) => {
+    // ── Optimistic UI: show the card instantly before server responds ──
+    const tempId = `temp_${Date.now()}`;
+    const optimisticBook = { ...bookData, _id: tempId, _isOptimistic: true };
+    setBooks(prev => [...prev, optimisticBook]);
+    setIsAddModalOpen(false); // close modal immediately
+
     fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/books`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -98,10 +104,14 @@ function App() {
     })
       .then(res => res.json())
       .then(newBook => {
-        setBooks(prev => [...prev, newBook]);
-        setIsAddModalOpen(false);
+        // Replace the temporary card with the real DB entry
+        setBooks(prev => prev.map(b => b._id === tempId ? newBook : b));
       })
-      .catch(err => console.error('Error adding book:', err));
+      .catch(err => {
+        console.error('Error adding book:', err);
+        // Rollback — remove the optimistic card on failure
+        setBooks(prev => prev.filter(b => b._id !== tempId));
+      });
   };
 
   const deleteBook = (id) => {
@@ -114,20 +124,29 @@ function App() {
       });
   };
 
-  const updateBook = async (id, updatedData) => {
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/books/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedData),
+  const updateBook = (id, updatedData) => {
+    // ── Optimistic UI: update card instantly ──
+    setBooks(prev => prev.map(b => b._id === id ? { ...b, ...updatedData } : b));
+    setEditBook(null); // close modal immediately
+
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/books/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedData),
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Update failed');
+        return res.json();
+      })
+      .then(updated => {
+        // Sync with real DB response
+        setBooks(prev => prev.map(b => b._id === id ? updated : b));
+      })
+      .catch(err => {
+        console.error('Error updating book:', err);
+        // Rollback by re-fetching
+        fetchBooks();
       });
-      if (!res.ok) throw new Error('Update failed');
-      const updated = await res.json();
-      setBooks(prev => prev.map(b => b._id === id ? updated : b));
-      setEditBook(null);
-    } catch (err) {
-      console.error('Error updating book:', err);
-    }
   };
 
   // ── Filtered books ───────────────────────────────────────
