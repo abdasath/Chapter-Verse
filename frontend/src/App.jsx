@@ -90,7 +90,16 @@ function App() {
   };
 
   // ── Book CRUD ────────────────────────────────────────────
-  const addBook = (bookData) => {
+  const addBook = (bookData, setError) => {
+    // ── Client-side duplicate check (instant, no server needed) ──
+    const isDuplicate = books.some(
+      b => b.title.trim().toLowerCase() === bookData.title.trim().toLowerCase()
+    );
+    if (isDuplicate) {
+      setError(`"${bookData.title}" is already in the library.`);
+      return; // keep modal open
+    }
+
     // ── Optimistic UI: show the card instantly before server responds ──
     const tempId = `temp_${Date.now()}`;
     const optimisticBook = { ...bookData, _id: tempId, _isOptimistic: true };
@@ -102,15 +111,19 @@ function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(bookData),
     })
-      .then(res => res.json())
+      .then(res => {
+        if (res.status === 409) throw new Error('duplicate');
+        if (!res.ok) throw new Error('server_error');
+        return res.json();
+      })
       .then(newBook => {
         // Replace the temporary card with the real DB entry
         setBooks(prev => prev.map(b => b._id === tempId ? newBook : b));
       })
       .catch(err => {
-        console.error('Error adding book:', err);
-        // Rollback — remove the optimistic card on failure
+        // Rollback the optimistic card
         setBooks(prev => prev.filter(b => b._id !== tempId));
+        console.error('Error adding book:', err.message);
       });
   };
 

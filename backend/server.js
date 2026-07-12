@@ -149,11 +149,17 @@ app.get('/api/books', async (req, res) => {
 // POST a new book
 app.post('/api/books', async (req, res) => {
   try {
-    // *** REAL MONGODB LOGIC UNCOMMENTED ***
+    // ── Server-side duplicate check (case-insensitive) ──
+    const existing = await Book.findOne({
+      title: { $regex: `^${req.body.title.trim()}$`, $options: 'i' }
+    });
+    if (existing) {
+      return res.status(409).json({ message: `"${req.body.title}" already exists in the library.` });
+    }
+
     const newBook = new Book(req.body);
     const savedBook = await newBook.save();
-    res.status(201).json(savedBook); // Use 201 status for creation
-    // REMOVED TEMPORARY MOCK DATA
+    res.status(201).json(savedBook);
   } catch (error) {
     console.error('Error adding book:', error);
     res.status(400).json({ message: 'Invalid book data' });

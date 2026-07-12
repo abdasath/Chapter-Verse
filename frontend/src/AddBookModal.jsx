@@ -10,18 +10,21 @@ const AddBookModal = ({ onClose, onAdd }) => {
     description: '',
     downloadUrl: '',
   });
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
+    setError(''); // clear error on any input change
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (formData.title && formData.author) {
-      onAdd(formData);
-    } else {
-      alert('Title and Author are required!');
+    if (!formData.title || !formData.author) {
+      setError('Title and Author are required.');
+      return;
     }
+    // Pass setError so App.jsx can push a duplicate error back
+    onAdd(formData, setError);
   };
 
   return (
@@ -32,6 +35,11 @@ const AddBookModal = ({ onClose, onAdd }) => {
 
         <div className="modal-content">
           <h2>Add New Book</h2>
+          {error && (
+            <div className="auth-error" style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {error}
+            </div>
+          )}
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="title">Title</label>
