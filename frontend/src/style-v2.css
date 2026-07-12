@@ -553,8 +553,9 @@ button, input, textarea, select {
 /* ── SCROLL TO TOP BUTTON ─────────────────────────────── */
 .scroll-top-btn {
   position: fixed;
-  bottom: 104px;   /* sits above the FAB when admin is logged in */
-  right: 36px;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -574,13 +575,13 @@ button, input, textarea, select {
 }
 .scroll-top-btn:hover {
   background: rgba(168, 85, 247, 0.35);
-  transform: translateY(-3px);
+  transform: translateX(-50%) translateY(-3px);
   box-shadow: 0 8px 28px rgba(168, 85, 247, 0.4);
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 .add-button {
