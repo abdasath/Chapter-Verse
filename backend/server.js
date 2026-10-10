@@ -1,5 +1,5 @@
 // server.js (Your Node.js/Express Backend)
-require('dotenv').config(); // ✅ Load .env FIRST before anything else
+require('dotenv').config();
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -10,21 +10,18 @@ const jwt = require('jsonwebtoken');
 const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET;
-// Middleware
-app.use(cors()); // Allow React frontend to talk to this backend
-app.use(express.json()); // To parse JSON bodies
+
+app.use(cors());
+app.use(express.json());
 
 const MONGO_URI = process.env.MONGODB_URI;
 
 if (!MONGO_URI) {
-  console.error('❌ MONGODB_URI is not defined!');
+  console.error('MONGODB_URI is not defined in environment variables');
   process.exit(1);
 }
 
-// ── Serverless-safe connection caching ───────────────────
-// In serverless, each function invocation is stateless.
-// We cache the connection on the global object so it's
-// reused across warm invocations instead of reconnecting every time.
+// Serverless-safe MongoDB connection caching
 let cached = global.mongoose;
 if (!cached) { cached = global.mongoose = { conn: null, promise: null }; }
 
@@ -34,41 +31,38 @@ const connectDB = async () => {
     cached.promise = mongoose
       .connect(MONGO_URI, { serverSelectionTimeoutMS: 30000 })
       .then(m => {
-        console.log('✅ MongoDB Atlas connected successfully!');
+        console.log('MongoDB connected successfully');
         return m;
       });
   }
   try {
     cached.conn = await cached.promise;
   } catch (err) {
-    cached.promise = null; // reset so next request retries
+    cached.promise = null;
     throw err;
   }
   return cached.conn;
 };
 
-// Ensure DB is connected before every request
 app.use(async (req, res, next) => {
   try {
     await connectDB();
     next();
   } catch (err) {
-    console.error('❌ MongoDB connection error:', err.message);
+    console.error('MongoDB connection error:', err.message);
     res.status(500).json({ message: 'Database connection failed' });
   }
 });
 
-// 1. Define User Schema
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true }, // Will store hashed password
+  password: { type: String, required: true },
 });
 const User = mongoose.model('User', UserSchema);
 
-// --- Book Model (Schema) ---
 const BookSchema = new mongoose.Schema({
-  title: { type: String, required: true }, // Added required for validation
+  title: { type: String, required: true },
   author: { type: String, required: true },
   description: String,
   coverImageURL: String,
@@ -76,20 +70,16 @@ const BookSchema = new mongoose.Schema({
 });
 const Book = mongoose.model('Book', BookSchema);
 
-// --- AUTH ROUTES ---
+// Auth Routes
 
-// 2. REGISTER Endpoint
 app.post('/api/register', async (req, res) => {
   const { username, email, password } = req.body;
   try {
-    // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: "User already exists" });
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create User
     const user = await User.create({
       username,
       email,
@@ -102,24 +92,18 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// 3. LOGIN Endpoint
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // 1. Check if user exists
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // 2. Verify Password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Wrong Password" });
 
-    // 3. Generate Token
-    // Make sure JWT_SECRET is defined (e.g., process.env.JWT_SECRET)
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
     
-    // 4. Send back token, username, AND email
     res.json({ 
       token, 
       username: user.username, 
@@ -131,25 +115,20 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// --- API Routes ---
+// API Routes
 
-// GET all books
 app.get('/api/books', async (req, res) => {
   try {
-    // *** REAL MONGODB LOGIC UNCOMMENTED ***
     const books = await Book.find();
     res.json(books);
-    // REMOVED TEMPORARY MOCK DATA
   } catch (error) {
     console.error('Error fetching books:', error);
     res.status(500).json({ message: 'Error fetching books' });
   }
 });
 
-// POST a new book
 app.post('/api/books', async (req, res) => {
   try {
-    // ── Server-side duplicate check (case-insensitive) ──
     const existing = await Book.findOne({
       title: { $regex: `^${req.body.title.trim()}$`, $options: 'i' }
     });
@@ -166,7 +145,6 @@ app.post('/api/books', async (req, res) => {
   }
 });
 
-// PUT (update) a book
 app.put('/api/books/:id', async (req, res) => {
   try {
     const updated = await Book.findByIdAndUpdate(
@@ -182,27 +160,22 @@ app.put('/api/books/:id', async (req, res) => {
   }
 });
 
-// DELETE a book
 app.delete('/api/books/:id', async (req, res) => {
   try {
-    // *** REAL MONGODB LOGIC UNCOMMENTED ***
     const result = await Book.findByIdAndDelete(req.params.id);
     if (!result) {
       return res.status(404).json({ message: 'Book not found' });
     }
-    res.sendStatus(204); // ✅ 204 must have no body
-    // REMOVED TEMPORARY MOCK DATA
+    res.sendStatus(204);
   } catch (error) {
     console.error('Error deleting book:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
-
-// ✅ Export for Vercel serverless — listen only in local dev
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
   });
 }
 
