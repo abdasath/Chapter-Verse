@@ -12,28 +12,22 @@ function App() {
   const [books, setBooks] = useState([]);
   const [selectedBook, setSelectedBook] = useState(null);
 
-  // --- AUTH STATE ---
   const [user, setUser] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const [editBook, setEditBook] = useState(null); // book being edited
+  const [editBook, setEditBook] = useState(null);
 
-  // --- SEARCH STATE ---
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
-  // --- PAGINATION STATE ---
   const [currentPage, setCurrentPage] = useState(1);
   const booksPerPage = 12;
 
-  // *** ADMIN RULE ***
   const ADMIN_EMAIL = 'abdasath003@gmail.com';
   const isAdmin = userEmail === ADMIN_EMAIL;
 
-  // ── Fetch Books ──────────────────────────────────────────
-  // Fisher-Yates shuffle — new random order on every reload
   const shuffleArray = (arr) => {
     const a = [...arr];
     for (let i = a.length - 1; i > 0; i--) {
@@ -73,7 +67,6 @@ function App() {
     }
   }, []);
 
-  // ── Auth Handlers ────────────────────────────────────────
   const handleLogin = (token, username, email) => {
     localStorage.setItem('token', token);
     localStorage.setItem('username', username);
@@ -89,22 +82,19 @@ function App() {
     setIsLogoutModalOpen(false);
   };
 
-  // ── Book CRUD ────────────────────────────────────────────
   const addBook = (bookData, setError) => {
-    // ── Client-side duplicate check (instant, no server needed) ──
     const isDuplicate = books.some(
       b => b.title.trim().toLowerCase() === bookData.title.trim().toLowerCase()
     );
     if (isDuplicate) {
       setError(`"${bookData.title}" is already in the library.`);
-      return; // keep modal open
+      return;
     }
 
-    // ── Optimistic UI: show the card instantly before server responds ──
     const tempId = `temp_${Date.now()}`;
     const optimisticBook = { ...bookData, _id: tempId, _isOptimistic: true };
     setBooks(prev => [...prev, optimisticBook]);
-    setIsAddModalOpen(false); // close modal immediately
+    setIsAddModalOpen(false);
 
     fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/books`, {
       method: 'POST',
@@ -117,11 +107,9 @@ function App() {
         return res.json();
       })
       .then(newBook => {
-        // Replace the temporary card with the real DB entry
         setBooks(prev => prev.map(b => b._id === tempId ? newBook : b));
       })
       .catch(err => {
-        // Rollback the optimistic card
         setBooks(prev => prev.filter(b => b._id !== tempId));
         console.error('Error adding book:', err.message);
       });
@@ -133,14 +121,13 @@ function App() {
     fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/books/${id}`, { method: 'DELETE' })
       .catch(err => {
         console.error('Error deleting book:', err);
-        setBooks(prev); // rollback on failure
+        setBooks(prev);
       });
   };
 
   const updateBook = (id, updatedData) => {
-    // ── Optimistic UI: update card instantly ──
     setBooks(prev => prev.map(b => b._id === id ? { ...b, ...updatedData } : b));
-    setEditBook(null); // close modal immediately
+    setEditBook(null);
 
     fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/books/${id}`, {
       method: 'PUT',
@@ -152,17 +139,14 @@ function App() {
         return res.json();
       })
       .then(updated => {
-        // Sync with real DB response
         setBooks(prev => prev.map(b => b._id === id ? updated : b));
       })
       .catch(err => {
         console.error('Error updating book:', err);
-        // Rollback by re-fetching
         fetchBooks();
       });
   };
 
-  // ── Filtered books ───────────────────────────────────────
   const filteredBooks = books.filter((book) => {
     const term = searchTerm.toLowerCase();
     return (
@@ -171,40 +155,35 @@ function App() {
     );
   });
 
-  // ── Pagination Logic ─────────────────────────────────────
   const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
   const indexOfLastBook = currentPage * booksPerPage;
   const indexOfFirstBook = indexOfLastBook - booksPerPage;
   const currentBooks = filteredBooks.slice(indexOfFirstBook, indexOfLastBook);
 
   useEffect(() => {
-    setCurrentPage(1); // Reset to page 1 on search
+    setCurrentPage(1);
   }, [searchTerm]);
 
-  // Smart truncated page number array — always shows first, last, current±1, and ... for gaps
   const getPageNumbers = (current, total) => {
     if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
     const pages = [1];
-    if (current > 3)            pages.push('...');
+    if (current > 3) pages.push('...');
     for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) pages.push(i);
-    if (current < total - 2)    pages.push('...');
+    if (current < total - 2) pages.push('...');
     pages.push(total);
     return pages;
   };
 
-  // Scroll to top whenever page changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentPage]);
 
-  // Lock background scroll when any modal is open
   const isAnyModalOpen = isAuthModalOpen || isAddModalOpen || isLogoutModalOpen || !!selectedBook || !!editBook;
   useEffect(() => {
     document.body.style.overflow = isAnyModalOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [isAnyModalOpen]);
 
-  // Show scroll-to-top button after user scrolls down 300px
   const [showScrollTop, setShowScrollTop] = useState(false);
   useEffect(() => {
     const onScroll = () => setShowScrollTop(window.scrollY > 300);
@@ -212,11 +191,10 @@ function App() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // ── Render ───────────────────────────────────────────────
   return (
     <div className="App">
 
-      {/* ── NAVBAR ── */}
+      {/* NAVBAR */}
       <nav className="navbar">
         <div className="logo-container">
           <h1 onClick={() => {
@@ -268,7 +246,7 @@ function App() {
         </div>
       </nav>
 
-      {/* ── HERO SECTION ── */}
+      {/* HERO SECTION */}
       {!searchTerm && (
         <section className="hero">
           <h2 className="hero-title">Your Digital Library,<br />Beautifully Curated.</h2>
@@ -292,7 +270,7 @@ function App() {
         </section>
       )}
 
-      {/* ── SECTION HEADER ── */}
+      {/* SECTION HEADER */}
       <div className="section-header">
         <span className="section-title">
           {searchTerm ? `Results for "${searchTerm}"` : 'Library'}
@@ -300,7 +278,7 @@ function App() {
         <div className="section-line" />
       </div>
 
-      {/* ── BOOK GRID ── */}
+      {/* BOOK GRID */}
       <div className="container">
         {isLoading ? (
           <div className="loading-container">
@@ -334,7 +312,7 @@ function App() {
         )}
       </div>
 
-      {/* ── PAGINATION ── */}
+      {/* PAGINATION */}
       {!isLoading && totalPages > 1 && (
         <div className="pagination">
           <button
@@ -371,14 +349,14 @@ function App() {
         </div>
       )}
 
-      {/* ── FOOTER ── */}
+      {/* FOOTER */}
       <footer className="footer">
         <span className="footer-brand">ChapterVerse.</span>
         <span className="footer-text">© {new Date().getFullYear()} · Built with ♥</span>
         <span className="footer-tagline">Read freely. Learn endlessly.</span>
       </footer>
 
-      {/* ── SCROLL TO TOP ── */}
+      {/* SCROLL TO TOP */}
       {showScrollTop && (
         <button
           className="scroll-top-btn"
@@ -389,14 +367,14 @@ function App() {
         </button>
       )}
 
-      {/* ── FAB (Admin only) ── */}
+      {/* FAB (Admin only) */}
       {isAdmin && (
         <button className="add-button" onClick={() => setIsAddModalOpen(true)} title="Add a new book">
           <Plus size={28} />
         </button>
       )}
 
-      {/* ── MODALS ── */}
+      {/* MODALS */}
       {isAuthModalOpen && (
         <AuthModal onClose={() => setIsAuthModalOpen(false)} onLogin={handleLogin} />
       )}
@@ -414,7 +392,7 @@ function App() {
         />
       )}
 
-      {/* ── LOGOUT CONFIRM MODAL ── */}
+      {/* LOGOUT CONFIRM MODAL */}
       {isLogoutModalOpen && (
         <div className="modal-overlay">
           <div className="modal logout-modal">
