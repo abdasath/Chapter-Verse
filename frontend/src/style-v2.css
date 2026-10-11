@@ -721,8 +721,8 @@ button, input, textarea, select {
 /* ── 16. CLOSE BUTTON ────────────────────────────────────── */
 .close-btn {
   position: absolute;
-  top: 14px;
-  right: 16px;
+  top: 20px;
+  right: 20px;
   width: 32px;
   height: 32px;
   border-radius: 50%;
