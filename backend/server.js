@@ -86,7 +86,14 @@ app.post('/api/register', async (req, res) => {
       password: hashedPassword,
     });
 
-    res.status(201).json({ message: "User created successfully" });
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
+
+    res.status(201).json({ 
+      message: "User created successfully",
+      token,
+      username: user.username,
+      email: user.email
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

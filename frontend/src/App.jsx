@@ -18,6 +18,7 @@ function App() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [editBook, setEditBook] = useState(null);
+  const [pendingDownloadUrl, setPendingDownloadUrl] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -73,6 +74,16 @@ function App() {
     localStorage.setItem('email', email);
     setUser(username);
     setUserEmail(email);
+
+    if (pendingDownloadUrl) {
+      window.open(pendingDownloadUrl, '_blank');
+      setPendingDownloadUrl(null);
+    }
+  };
+
+  const handleRequireAuth = (downloadUrl) => {
+    setPendingDownloadUrl(downloadUrl);
+    setIsAuthModalOpen(true);
   };
 
   const confirmLogout = () => {
@@ -374,15 +385,27 @@ function App() {
         </button>
       )}
 
-      {/* MODALS */}
+      {/* Modals */}
       {isAuthModalOpen && (
-        <AuthModal onClose={() => setIsAuthModalOpen(false)} onLogin={handleLogin} />
+        <AuthModal
+          onClose={() => {
+            setIsAuthModalOpen(false);
+            setPendingDownloadUrl(null);
+          }}
+          onLogin={handleLogin}
+          prompt={pendingDownloadUrl ? "Please sign in or register to download this book." : ""}
+        />
       )}
       {isAddModalOpen && (
         <AddBookModal onClose={() => setIsAddModalOpen(false)} onAdd={addBook} />
       )}
       {selectedBook && (
-        <BookDetailsModal book={selectedBook} onClose={() => setSelectedBook(null)} />
+        <BookDetailsModal
+          book={selectedBook}
+          onClose={() => setSelectedBook(null)}
+          user={user}
+          onRequireAuth={handleRequireAuth}
+        />
       )}
       {editBook && (
         <EditBookModal
