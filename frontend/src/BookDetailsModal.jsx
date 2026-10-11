@@ -1,12 +1,16 @@
 import React from 'react';
-import { X, Download } from 'lucide-react';
+import { X, Download, Lock } from 'lucide-react';
 
-// Displays full details of a single book
-const BookDetailsModal = ({ book, onClose }) => {
+const BookDetailsModal = ({ book, onClose, user, onRequireAuth }) => {
+  const handleDownloadClick = (e) => {
+    if (!user) {
+      e.preventDefault();
+      onRequireAuth(book.downloadUrl);
+    }
+  };
+
   return (
-    // Overlay click closes the modal
     <div className="modal-overlay" onClick={onClose}>
-      {/* StopPropagation prevents the overlay click from bubbling up when clicking inside the modal */}
       <div className="modal details-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-content">
           <button className="close-btn" onClick={onClose}><X size={20} /></button>
@@ -33,18 +37,18 @@ const BookDetailsModal = ({ book, onClose }) => {
             <h3>Description</h3>
             <p>{book.description || "No detailed description was added for this book."}</p>
 
-            {/* --- NEW CODE STARTS HERE --- */}
-          {book.downloadUrl && (
-            <a 
-              href={book.downloadUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="download-btn"
-            >
-              <Download size={16} /> Download Book
-            </a>
-          )}
-
+            {book.downloadUrl && (
+              <a 
+                href={user ? book.downloadUrl : '#'} 
+                target={user ? "_blank" : "_self"} 
+                rel="noopener noreferrer"
+                className="download-btn"
+                onClick={handleDownloadClick}
+              >
+                {user ? <Download size={16} /> : <Lock size={16} />}
+                Download Book
+              </a>
+            )}
           </div>
           
         </div>

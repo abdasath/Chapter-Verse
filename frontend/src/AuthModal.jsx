@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './style-v2.css';
 import { X, CheckCircle2 } from 'lucide-react';
 
-const AuthModal = ({ onClose, onLogin }) => {
+const AuthModal = ({ onClose, onLogin, prompt }) => {
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [formData, setFormData] = useState({ username: '', email: '', password: '' });
   const [error, setError] = useState('');
@@ -49,13 +49,17 @@ const AuthModal = ({ onClose, onLogin }) => {
         onLogin(data.token, data.username, data.email);
         onClose();
       } else {
-        // ✅ Styled success message instead of alert()
-        setSuccessMsg('Account created! You can now log in.');
-        setFormData({ username: '', email: '', password: '' });
-        setTimeout(() => {
-          setIsLoginMode(true);
-          setSuccessMsg('');
-        }, 2000);
+        if (data.token) {
+          onLogin(data.token, data.username, data.email);
+          onClose();
+        } else {
+          setSuccessMsg('Account created! You can now log in.');
+          setFormData({ username: '', email: '', password: '' });
+          setTimeout(() => {
+            setIsLoginMode(true);
+            setSuccessMsg('');
+          }, 2000);
+        }
       }
     } catch (err) {
       setError(err.message);
@@ -71,6 +75,7 @@ const AuthModal = ({ onClose, onLogin }) => {
 
         <div className="modal-content">
           <h2>{isLoginMode ? 'Welcome Back' : 'Create Account'}</h2>
+          {prompt && <p style={{ color: 'var(--purple-400)', fontSize: '0.9rem', marginBottom: '14px', textAlign: 'center' }}>{prompt}</p>}
 
           {/* Error message */}
           {error && <div className="auth-error">{error}</div>}
