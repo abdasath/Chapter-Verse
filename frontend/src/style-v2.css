@@ -823,7 +823,11 @@ button, input, textarea, select {
   box-shadow: 0 8px 24px rgba(168,85,247,0.5);
 }
 
-/* ── 18. AUTH MODAL SPECIFICS ────────────────────────────── */
+/* Auth Modal Specifics */
+.auth-modal-overlay {
+  z-index: 1200;
+}
+
 .auth-switch-text {
   color: var(--purple-400);
   cursor: pointer;

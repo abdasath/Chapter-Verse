@@ -386,19 +386,6 @@ function App() {
       )}
 
       {/* Modals */}
-      {isAuthModalOpen && (
-        <AuthModal
-          onClose={() => {
-            setIsAuthModalOpen(false);
-            setPendingDownloadUrl(null);
-          }}
-          onLogin={handleLogin}
-          prompt={pendingDownloadUrl ? "Please sign in or register to download this book." : ""}
-        />
-      )}
-      {isAddModalOpen && (
-        <AddBookModal onClose={() => setIsAddModalOpen(false)} onAdd={addBook} />
-      )}
       {selectedBook && (
         <BookDetailsModal
           book={selectedBook}
@@ -407,11 +394,24 @@ function App() {
           onRequireAuth={handleRequireAuth}
         />
       )}
+      {isAddModalOpen && (
+        <AddBookModal onClose={() => setIsAddModalOpen(false)} onAdd={addBook} />
+      )}
       {editBook && (
         <EditBookModal
           book={editBook}
           onClose={() => setEditBook(null)}
           onUpdate={updateBook}
+        />
+      )}
+      {isAuthModalOpen && (
+        <AuthModal
+          onClose={() => {
+            setIsAuthModalOpen(false);
+            setPendingDownloadUrl(null);
+          }}
+          onLogin={handleLogin}
+          prompt={pendingDownloadUrl ? "Please sign in or register to download this book." : ""}
         />
       )}
 

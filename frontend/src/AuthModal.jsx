@@ -69,7 +69,7 @@ const AuthModal = ({ onClose, onLogin, prompt }) => {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay auth-modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <button className="close-btn" onClick={onClose}><X size={20} /></button>
 
@@ -77,10 +77,8 @@ const AuthModal = ({ onClose, onLogin, prompt }) => {
           <h2>{isLoginMode ? 'Welcome Back' : 'Create Account'}</h2>
           {prompt && <p style={{ color: 'var(--purple-400)', fontSize: '0.9rem', marginBottom: '14px', textAlign: 'center' }}>{prompt}</p>}
 
-          {/* Error message */}
           {error && <div className="auth-error">{error}</div>}
 
-          {/* ✅ Success message (replaces alert) */}
           {successMsg && <div className="auth-success" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}><CheckCircle2 size={16} /> {successMsg}</div>}
 
           <form onSubmit={handleSubmit}>
