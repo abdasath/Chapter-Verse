@@ -1,9 +1,4 @@
-/* ============================================================
-   CHAPTERVERSE — PREMIUM UI v3.0
-   Dark Purple / Gold Glassmorphism Theme
-   ============================================================ */
-
-/* ── 0. IMPORTS & VARIABLES ─────────────────────────────── */
+/* Imports & Variables */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;700;800;900&display=swap');
 
 :root {
@@ -48,7 +43,7 @@
   --radius-full: 9999px;
 }
 
-/* ── 1. GLOBAL RESET & BASE ──────────────────────────────── */
+/* Global Reset & Base */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -84,7 +79,7 @@ button, input, textarea, select {
   -webkit-user-select: none;
 }
 
-/* ── 2. NAVBAR ───────────────────────────────────────────── */
+/* Navbar */
 .navbar {
   position: sticky;
   top: 0;
@@ -121,7 +116,7 @@ button, input, textarea, select {
 
 .navbar h1:hover { opacity: 0.85; }
 
-/* ── 3. SEARCH BAR ───────────────────────────────────────── */
+/* Search Bar */
 .search-container {
   flex: 2;
   display: flex;
@@ -152,7 +147,7 @@ button, input, textarea, select {
   transform: scale(1.01);
 }
 
-/* ── 4. AUTH AREA ────────────────────────────────────────── */
+/* Auth Area */
 .auth-container {
   display: flex;
   align-items: center;
@@ -174,7 +169,7 @@ button, input, textarea, select {
   backdrop-filter: blur(8px);
 }
 
-/* ── 5. BUTTONS ──────────────────────────────────────────── */
+/* Buttons */
 .btn-primary,
 .btn-secondary,
 .btn-danger {
@@ -237,7 +232,7 @@ button, input, textarea, select {
 .btn-secondary:focus { outline-color: var(--color-text-2); }
 .btn-danger:focus { outline-color: var(--color-danger); }
 
-/* ── 6. HERO SECTION ─────────────────────────────────────── */
+/* Hero Section */
 .hero {
   text-align: center;
   padding: 64px 24px 48px;
@@ -310,7 +305,7 @@ button, input, textarea, select {
   letter-spacing: 0.8px;
 }
 
-/* ── 7. SECTION HEADER ───────────────────────────────────── */
+/* Section Header */
 .section-header {
   max-width: 1200px;
   margin: 0 auto 20px;
@@ -344,7 +339,7 @@ button, input, textarea, select {
   border-radius: var(--radius-full);
 }
 
-/* ── 8. BOOK GRID ────────────────────────────────────────── */
+/* Book Grid */
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -354,7 +349,7 @@ button, input, textarea, select {
   gap: 24px;
 }
 
-/* ── 9. BOOK CARD ────────────────────────────────────────── */
+/* Book Card */
 .book-card {
   background: var(--bg-surface);
   border-radius: var(--radius-lg);
@@ -445,7 +440,7 @@ button, input, textarea, select {
 
 .book-card:hover::after { transform: scaleX(1); }
 
-/* ── 10. DELETE BUTTON ───────────────────────────────────── */
+/* Delete Button */
 .admin-btns {
   position: absolute;
   top: 8px;
@@ -490,7 +485,7 @@ button, input, textarea, select {
 }
 
 
-/* ── 11. LOADING STATE ───────────────────────────────────── */
+/* Loading State */
 .loading-container {
   grid-column: 1 / -1;
   display: flex;
@@ -517,7 +512,7 @@ button, input, textarea, select {
   letter-spacing: 0.5px;
 }
 
-/* ── 12. EMPTY STATE ─────────────────────────────────────── */
+/* Empty State */
 .empty-state {
   grid-column: 1 / -1;
   display: flex;
@@ -549,8 +544,8 @@ button, input, textarea, select {
   line-height: 1.6;
 }
 
-/* ── 13. FAB ADD BUTTON ──────────────────────────────────── */
-/* ── SCROLL TO TOP BUTTON ─────────────────────────────── */
+/* Fab Add Button */
+/* Scroll To Top Button */
 .scroll-top-btn {
   position: fixed;
   bottom: 32px;
@@ -617,7 +612,7 @@ button, input, textarea, select {
   box-shadow: 0 0 0 4px rgba(168,85,247,0.35);
 }
 
-/* ── 14. MODAL OVERLAY ───────────────────────────────────── */
+/* Modal Overlay */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -666,7 +661,7 @@ button, input, textarea, select {
   border-bottom: 1px solid var(--color-border);
 }
 
-/* ── 15. FORM STYLES ─────────────────────────────────────── */
+/* Form Styles */
 .form-group {
   margin-bottom: 18px;
 }
@@ -718,7 +713,7 @@ button, input, textarea, select {
   gap: 10px;
 }
 
-/* ── 16. CLOSE BUTTON ────────────────────────────────────── */
+/* Close Button */
 .close-btn {
   position: absolute;
   top: 20px;
@@ -745,7 +740,7 @@ button, input, textarea, select {
   transform: rotate(90deg);
 }
 
-/* ── 17. BOOK DETAILS MODAL ──────────────────────────────── */
+/* Book Details Modal */
 .details-modal {
   max-width: 660px;
   padding: 32px;
@@ -858,7 +853,7 @@ button, input, textarea, select {
   margin-bottom: 16px;
 }
 
-/* ── 19. LOGOUT MODAL ────────────────────────────────────── */
+/* Logout Modal */
 .logout-modal {
   max-width: 320px;
   text-align: center;
@@ -880,7 +875,7 @@ button, input, textarea, select {
   justify-content: center;
 }
 
-/* ── 20. FOOTER ──────────────────────────────────────────── */
+/* Footer */
 .footer {
   border-top: 1px solid var(--color-border);
   padding: 28px 48px;
@@ -914,7 +909,7 @@ button, input, textarea, select {
   color: var(--color-text-3);
 }
 
-/* ── 21. ANIMATIONS ──────────────────────────────────────── */
+/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -934,7 +929,7 @@ button, input, textarea, select {
   to   { opacity: 1; transform: translateY(0);    }
 }
 
-/* ── 22. PAGINATION ──────────────────────────────────────── */
+/* Pagination */
 .pagination {
   grid-column: 1 / -1;
   display: flex;
@@ -1000,7 +995,7 @@ button, input, textarea, select {
   cursor: not-allowed;
 }
 
-/* ── 23. RESPONSIVE ──────────────────────────────────────── */
+/* Responsive */
 @media (max-width: 768px) {
   .navbar {
     height: auto;

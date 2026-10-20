@@ -30,7 +30,6 @@ const AddBookModal = ({ onClose, onAdd }) => {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        {/* ✅ X Close button */}
         <button className="close-btn" onClick={onClose}><X size={20} /></button>
 
         <div className="modal-content">
