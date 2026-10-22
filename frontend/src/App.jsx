@@ -269,11 +269,11 @@ function App() {
               <span className="hero-stat-value" style={{ display: 'flex', alignItems: 'center', height: '28px' }}><BookOpen size={24} color="var(--purple-400)" /></span>
               <span className="hero-stat-label">Vast</span>
             </div>
-            <div className="hero-stat" style={{ borderLeft: '1px solid rgba(255,255,255,0.08)', paddingLeft: '32px' }}>
+            <div className="hero-stat">
               <span className="hero-stat-value" style={{ display: 'flex', alignItems: 'center', height: '28px', color: '#fbbf24' }}><Heart size={24} /></span>
               <span className="hero-stat-label">Free</span>
             </div>
-            <div className="hero-stat" style={{ borderLeft: '1px solid rgba(255,255,255,0.08)', paddingLeft: '32px' }}>
+            <div className="hero-stat">
               <span className="hero-stat-value" style={{ display: 'flex', alignItems: 'center', height: '28px' }}><Clock size={24} color="var(--purple-400)" /></span>
               <span className="hero-stat-label">24/7</span>
             </div>
