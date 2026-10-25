@@ -24,7 +24,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const booksPerPage = 12;
+  const booksPerPage = 15;
 
   const ADMIN_EMAIL = 'abdasath003@gmail.com';
   const isAdmin = userEmail === ADMIN_EMAIL;
@@ -417,17 +417,32 @@ function App() {
 
       {/* LOGOUT CONFIRM MODAL */}
       {isLogoutModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal logout-modal">
-            <button className="close-btn" onClick={() => setIsLogoutModalOpen(false)}><X size={20} /></button>
-            <h2>Log Out?</h2>
-            <p>Are you sure you want to sign out?</p>
-            <div className="modal-actions">
-              <button className="btn-secondary" onClick={() => setIsLogoutModalOpen(false)}>
-                Cancel
+        <div className="modal-overlay" onClick={() => setIsLogoutModalOpen(false)}>
+          <div className="logout-card" onClick={(e) => e.stopPropagation()}>
+            <button className="close-btn" onClick={() => setIsLogoutModalOpen(false)} aria-label="Close dialog">
+              <X size={17} />
+            </button>
+            <div className="logout-badge">
+              <LogOut size={26} strokeWidth={2.2} />
+            </div>
+            <h2 className="logout-title">Sign Out of ChapterVerse?</h2>
+            <p className="logout-description">
+              You will need to sign back in to download e-books or manage your library collection.
+            </p>
+            <div className="logout-actions">
+              <button
+                type="button"
+                className="logout-cancel-btn"
+                onClick={() => setIsLogoutModalOpen(false)}
+              >
+                Stay Signed In
               </button>
-              <button className="btn-danger" onClick={confirmLogout} style={{ whiteSpace: 'nowrap' }}>
-                Yes, Log Out
+              <button
+                type="button"
+                className="logout-confirm-btn"
+                onClick={confirmLogout}
+              >
+                Sign Out
               </button>
             </div>
           </div>
