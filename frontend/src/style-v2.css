@@ -1624,7 +1624,7 @@ button, input, textarea, select {
   }
 
   .auth-card {
-    max-width: 345px;
+    max-width: 365px;
     width: 100%;
   }
 
@@ -1662,7 +1662,25 @@ button, input, textarea, select {
   }
 
   .auth-dock-inner {
-    padding: 5px 6px 5px 12px;
+    padding: 6px 8px 6px 12px;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .auth-dock-question {
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .auth-dock-action-pill {
+    padding: 6px 11px;
+    font-size: 0.78rem;
+    gap: 4px;
+    flex-shrink: 0;
+    line-height: 1.2;
   }
 
   .close-btn {
@@ -1821,5 +1839,38 @@ button, input, textarea, select {
 
   .hero-stat-value {
     font-size: 1.05rem;
+  }
+
+  .auth-card {
+    padding: 20px 14px 16px;
+  }
+
+  .auth-dock-inner {
+    padding: 5px 6px 5px 10px;
+    gap: 6px;
+  }
+
+  .auth-dock-question {
+    font-size: 0.74rem;
+  }
+
+  .auth-dock-action-pill {
+    padding: 5px 9px;
+    font-size: 0.74rem;
+    gap: 3px;
+  }
+}
+
+@media (max-width: 340px) {
+  .auth-dock-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .auth-dock-action-pill {
+    width: 100%;
+    justify-content: center;
   }
 }

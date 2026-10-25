@@ -248,7 +248,7 @@ const AuthModal = ({ onClose, onLogin, prompt }) => {
               className="auth-dock-action-pill"
               onClick={() => toggleMode(!isLoginMode)}
             >
-              <span>{isLoginMode ? 'Create an Account' : 'Sign In'}</span>
+              <span>{isLoginMode ? 'Create Account' : 'Sign In'}</span>
               <ArrowRight size={14} className="dock-arrow" />
             </button>
           </div>
