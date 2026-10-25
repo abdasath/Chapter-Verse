@@ -1714,19 +1714,27 @@ button, input, textarea, select {
     margin-bottom: 0;
   }
 
+  .details-modal .text-content,
   .text-content {
     padding-right: 0;
+    padding-left: 0;
     width: 100%;
   }
 
+  .details-modal .text-content h2,
   .text-content h2 {
     font-size: 1.35rem;
     text-align: center;
+    padding-right: 0;
+    padding-left: 0;
   }
 
+  .details-modal .details-author,
   .details-author {
     font-size: 0.88rem;
     text-align: center;
+    padding-right: 0;
+    padding-left: 0;
   }
 
   .book-description h3 {

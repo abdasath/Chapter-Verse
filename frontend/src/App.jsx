@@ -24,7 +24,17 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const booksPerPage = 15;
+  const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth <= 768 : false));
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const booksPerPage = isMobile ? 16 : 15;
 
   const ADMIN_EMAIL = 'abdasath003@gmail.com';
   const isAdmin = userEmail === ADMIN_EMAIL;
@@ -174,6 +184,12 @@ function App() {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
+
+  useEffect(() => {
+    if (totalPages > 0 && currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
 
   const getPageNumbers = (current, total) => {
     if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
